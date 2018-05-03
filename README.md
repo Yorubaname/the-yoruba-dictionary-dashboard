@@ -1,11 +1,11 @@
 # dashboardapp
 
-## Yorubaname Dashboard App
+## Yoruba Dictionary dashboard App
 
-The Yorubaname Dashboard application is a stand alone AngularJs that interacts with the backend services.
+The Yoruba Dictionary dashboard application is a stand alone AngularJs app that interacts with the backend services.
 
 To function, it needs to be able to send requests to a running backend. The backend source and
-the instructions on how to run it can be found here https://github.com/Yorubaname/yorubaname-website
+the instructions on how to run it can be found at https://github.com/Yorubaname/the-yoruba-dictionary
 
 ### Prerequisites
 
@@ -17,7 +17,7 @@ the instructions on how to run it can be found here https://github.com/Yorubanam
 5. run `npm install`
 6. run `bower install`
 
-The Yorubaname Dashboard can be ran in two ways:
+The Yoruba Dictionary dashboard can be run in two ways:
 
 1. Running directly from source (dev mode)
 2. Running from bundled source (prod mode)
