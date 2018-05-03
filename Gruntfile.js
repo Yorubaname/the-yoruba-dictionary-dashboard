@@ -119,6 +119,7 @@ module.exports = function (grunt) {
     jshint: {
       options: {
         jshintrc: '.jshintrc',
+        reporterOutput: '', // Empty string inside options
         reporter: require('jshint-stylish')
       },
       check: {
@@ -129,7 +130,8 @@ module.exports = function (grunt) {
       },
       test: {
         options: {
-          jshintrc: '.jshintrc'
+          jshintrc: '.jshintrc',
+          reporterOutput: '' // Empty string inside options
         },
         src: ['test/spec/{,*/}*.js']
       }
