@@ -4,7 +4,8 @@ angular.module('underscore', []).factory('_', function () {
 });
 angular.module('dashboardappApp', [
   'config',
-  'ui.router',
+  'ui.router', 
+  'ui.router.state.events',
   'ngAnimate',
   'ui.load',
   'ngSanitize',
