@@ -39,7 +39,7 @@ angular.module('NamesModule').controller('NamesAddEntriesCtrl', [
         });
       }
     });
-    
+
     $scope.generate_glossary = function () {
       // split the morphology with the dashes if it's not empty
       if ($scope.name.morphology) {
@@ -54,8 +54,8 @@ angular.module('NamesModule').controller('NamesAddEntriesCtrl', [
               part: newPart,
               meaning: ''
             });
-          } else {            
-            oldPart.part = newPart;  
+          } else {
+            oldPart.part = newPart;
           }
         }
         $scope.name.etymology = etymology.slice(0, splitMorphology.length);
@@ -228,18 +228,11 @@ angular.module('NamesModule').controller('NamesAddEntriesCtrl', [
              * Adds the suggested name to the list of names eligible to be added to search index
              */
     var acceptSuggestedName = function (entry) {
-      var name = {
-        name: entry.name,
-        meaning: entry.details,
-        geoLocation: entry.geoLocation,
-        submittedBy: entry.email
-      };
-      if (!$.isEmptyObject(name)) {
-        return namesService.addName(name, function () {
-          // Name added then delete from the suggested name store
-          return namesService.deleteName(entry, function () {
-            $scope.namesList.splice($scope.namesList.indexOf(entry), 1);
-          }, 'suggested');
+      // Change the state of the 'SUGGESTED' name TO 'NEW' to put it on the review queue
+      entry.state = 'NEW';
+      if (!$.isEmptyObject(entry)) {
+        return namesService.updateName(entry.name, entry, function () {
+          $scope.namesList.splice($scope.namesList.indexOf(entry), 1);
         });
       }
     };
@@ -311,7 +304,7 @@ angular.module('NamesModule').controller('NamesAddEntriesCtrl', [
       if (entry && $window.confirm('Are you sure you want to delete this feedback on ' + entry.name + '?')) {
         return namesService.deleteFeedback(entry.id, function () {
           $scope.feedbacks.splice($scope.feedbacks.indexOf(entry), 1)  // $scope.count--
-;
+            ;
         });
       }
     };
