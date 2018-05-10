@@ -21,8 +21,8 @@ angular.module('NamesModule').service('NamesService', [
         toastr.success(name.name + ' was successfully added. Add another name');
         fn();
         cacheNames();
-      }).error(function () {
-        toastr.error(name.name + ' could not be added. Please try again.');
+      }).error(function (error) {
+        toastr.error(name.name + ' could not be added: '+error.message);
       });
     };
     var getPrevAndNextNames = function (name, fn) {
