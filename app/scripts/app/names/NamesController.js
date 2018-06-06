@@ -7,18 +7,18 @@ angular.module('NamesModule').controller('NamesAddEntriesCtrl', [
   'NamesService',
   function ($rootScope, $scope, namesService) {
     $scope.new = true;
-    $scope.name = {};
+    $scope.word = {};
     $scope.submit = function () {
-      return namesService.addName($scope.name, function () {
+      return namesService.addName($scope.word, function () {
         // reset the form models fields
-        $scope.name = {};
+        $scope.word = {};
       });
     };
     $scope.generate_glossary = function () {
       // split the morphology with the dashes if it's not empty
-      if ($scope.name.morphology) {
-        let etymology = $scope.name.etymology;
-        const splitMorphology = $scope.name.morphology.split('-');
+      if ($scope.word.morphology) {
+        let etymology = $scope.word.etymology;
+        const splitMorphology = $scope.word.morphology.split('-');
         // add each entry to etymology list if it does not exist already
         for (var i = 0; i < splitMorphology.length; i++) {
           const newPart = splitMorphology[i];
@@ -32,7 +32,7 @@ angular.module('NamesModule').controller('NamesAddEntriesCtrl', [
             oldPart.part = newPart;
           }
         }
-        $scope.name.etymology = etymology.slice(0, splitMorphology.length);
+        $scope.word.etymology = etymology.slice(0, splitMorphology.length);
       }
     };
   }
@@ -50,22 +50,29 @@ angular.module('NamesModule').controller('NamesAddEntriesCtrl', [
       $scope.next = next;
     });
     namesService.getName($stateParams.entry, false, function (resp) {
-      $scope.name = resp;
-      originalName = resp.name;
+      $scope.word = resp;
+      originalName = resp.word;
       // hack for names without etymology
       if (!resp.etymology.length) {
-        $scope.name.etymology.push({
+        $scope.word.etymology.push({
           part: '',
           meaning: ''
+        });
+      }
+      if (!resp.definitions.length) {
+        $scope.word.definitions.push({
+          content: '',
+          englishTranslation: '',
+          type: ''
         });
       }
     });
 
     $scope.generate_glossary = function () {
       // split the morphology with the dashes if it's not empty
-      if ($scope.name.morphology) {
-        let etymology = $scope.name.etymology;
-        const splitMorphology = $scope.name.morphology.split('-');
+      if ($scope.word.morphology) {
+        let etymology = $scope.word.etymology;
+        const splitMorphology = $scope.word.morphology.split('-');
         // add each entry to etymology list if it does not exist already
         for (var i = 0; i < splitMorphology.length; i++) {
           const newPart = splitMorphology[i];
@@ -79,34 +86,34 @@ angular.module('NamesModule').controller('NamesAddEntriesCtrl', [
             oldPart.part = newPart;
           }
         }
-        $scope.name.etymology = etymology.slice(0, splitMorphology.length);
+        $scope.word.etymology = etymology.slice(0, splitMorphology.length);
       }
     };
 
     $scope.publish = function () {
       // update name first, then publish
-      return namesService.updateName(originalName, $scope.name, function () {
+      return namesService.updateName(originalName, $scope.word, function () {
         // first remove name from index
-        namesService.removeNameFromIndex($scope.name.name);
+        namesService.removeNameFromIndex($scope.word.name);
         // then add name back to index
-        return namesService.addNameToIndex($scope.name.name).success(function () {
-          $scope.name.state = 'PUBLISHED';
-          $scope.name.indexed = true;
-          toastr.info($scope.name.name + ' has been published');
+        return namesService.addNameToIndex($scope.word.name).success(function () {
+          $scope.word.state = 'PUBLISHED';
+          $scope.word.indexed = true;
+          toastr.info($scope.word.name + ' has been published');
           return $window.history.back();
         });
       });
     };
     $scope.goto = function (entry) {
-      namesService.updateName(originalName, $scope.name);
+      namesService.updateName(originalName, $scope.word);
       return $state.go('auth.names.edit_entries', { entry: entry });
     };
     $scope.submit = function () {
-      return namesService.updateName(originalName, $scope.name);
+      return namesService.updateName(originalName, $scope.word);
     };
     $scope.delete = function () {
-      if ($window.confirm('Are you sure you want to delete ' + $scope.name.name + '?')) {
-        return namesService.deleteName($scope.name, function () {
+      if ($window.confirm('Are you sure you want to delete ' + $scope.word.name + '?')) {
+        return namesService.deleteName($scope.word, function () {
           return $window.history.back();
         });
       }
@@ -119,7 +126,7 @@ angular.module('NamesModule').controller('NamesAddEntriesCtrl', [
   '$window',
   'toastr',
   function ($scope, namesService, $stateParams, $window, toastr) {
-    $scope.namesList = [];
+    $scope.wordsList = [];
     $scope.status = $stateParams.status;
     $scope.count = 50;
     $scope.pagination = { current: 1 };
@@ -129,7 +136,7 @@ angular.module('NamesModule').controller('NamesAddEntriesCtrl', [
       $scope.reverse = !$scope.reverse;  //if true make it false and vice versa
     };
     namesService.countNames($stateParams.status, function (num) {
-      $scope.namesListItems = num;
+      $scope.wordsListItems = num;
     });
     $scope.fetch = function (newPageNumber, count) {
       return namesService.getNames({
@@ -137,10 +144,10 @@ angular.module('NamesModule').controller('NamesAddEntriesCtrl', [
         page: newPageNumber || 1,
         count: count || $scope.itemsPerPage || $scope.count || 50
       }).success(function (responseData) {
-        $scope.namesList = [];
+        $scope.wordsList = [];
         $scope.pagination.current = newPageNumber || 1;
         responseData.forEach(function (name) {
-          $scope.namesList.push(name);
+          $scope.wordsList.push(name);
         });
       });
     };
@@ -148,11 +155,11 @@ angular.module('NamesModule').controller('NamesAddEntriesCtrl', [
     $scope.delete = function (entry) {
       if (entry && $window.confirm('Are you sure you want to delete ' + entry.name + '?')) {
         return namesService.deleteName(entry, function () {
-          $scope.namesList.splice($scope.namesList.indexOf(entry), 1);
-          $scope.namesListItems--;
+          $scope.wordsList.splice($scope.wordsList.indexOf(entry), 1);
+          $scope.wordsListItems--;
         }, $scope.status);
       }
-      var entries = $.map($scope.namesList, function (elem) {
+      var entries = $.map($scope.wordsList, function (elem) {
         if (elem.isSelected === true)
           return elem;
       });
@@ -183,7 +190,7 @@ angular.module('NamesModule').controller('NamesAddEntriesCtrl', [
         });
     };
     $scope.republishNames = function () {
-      var entries = $.map($scope.namesList, function (elem) {
+      var entries = $.map($scope.wordsList, function (elem) {
         if (elem.isSelected === true)
           return elem;
       });
@@ -200,7 +207,7 @@ angular.module('NamesModule').controller('NamesAddEntriesCtrl', [
       });
     };
     $scope.indexNames = function (action) {
-      var entries = $.map($scope.namesList, function (elem) {
+      var entries = $.map($scope.wordsList, function (elem) {
         if (elem.isSelected === true)
           return elem;
       });
@@ -234,7 +241,7 @@ angular.module('NamesModule').controller('NamesAddEntriesCtrl', [
     $scope.accept = function (entry) {
       if (entry)
         return acceptSuggestedName(entry);
-      var entries = $.map($scope.namesList, function (elem) {
+      var entries = $.map($scope.wordsList, function (elem) {
         if (elem.isSelected === true)
           return elem;
       });
@@ -253,7 +260,7 @@ angular.module('NamesModule').controller('NamesAddEntriesCtrl', [
       entry.state = 'NEW';
       if (!$.isEmptyObject(entry)) {
         return namesService.updateName(entry.name, entry, function () {
-          $scope.namesList.splice($scope.namesList.indexOf(entry), 1);
+          $scope.wordsList.splice($scope.wordsList.indexOf(entry), 1);
         });
       }
     };
@@ -263,12 +270,12 @@ angular.module('NamesModule').controller('NamesAddEntriesCtrl', [
   'NamesService',
   '$window',
   function ($scope, namesService, $window) {
-    $scope.namesList = [];
+    $scope.wordsList = [];
     namesService.getNames({ submittedBy: $scope.user.email }).success(function (responseData) {
-      $scope.namesListItems = responseData.length;
-      $scope.namesList = [];
+      $scope.wordsListItems = responseData.length;
+      $scope.wordsList = [];
       responseData.forEach(function (name) {
-        $scope.namesList.push(name);
+        $scope.wordsList.push(name);
       });
     });
     $scope.$on('onRepeatLast', function () {
@@ -278,7 +285,7 @@ angular.module('NamesModule').controller('NamesAddEntriesCtrl', [
         removeDisabled: true,
         showCounts: false,
         onClick: function () {
-          $scope.namesListItems = $window.document.getElementsByClassName('listNavShow').length;
+          $scope.wordsListItems = $window.document.getElementsByClassName('listNavShow').length;
           $scope.$apply();
         }
       });

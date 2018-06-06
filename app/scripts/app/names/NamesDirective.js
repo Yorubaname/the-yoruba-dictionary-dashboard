@@ -40,24 +40,24 @@ angular.module('NamesModule')  // Directive adds the geolocation autocompletes o
         templateUrl: 'tmpls/names/directives/etymology.html',
         link: function (scope) {
           if (!$stateParams.entry) {
-            scope.name.etymology = [];
-            scope.name.etymology.push({
+            scope.word.etymology = [];
+            scope.word.etymology.push({
               part: '',
               meaning: ''
             });
           }
 
           scope.add_etymology = function () {
-            return scope.name.etymology.push({
+            return scope.word.etymology.push({
               part: '',
               meaning: ''
             });
           };
 
           scope.remove_etymology = function (index) {
-            scope.name.etymology.splice(index, 1);
-            if (scope.name.etymology.length < 1)
-              return scope.name.etymology.push({
+            scope.word.etymology.splice(index, 1);
+            if (scope.word.etymology.length < 1)
+              return scope.word.etymology.push({
                 part: '',
                 meaning: ''
               });
@@ -68,7 +68,61 @@ angular.module('NamesModule')  // Directive adds the geolocation autocompletes o
         }
       };
     }
-  ]).directive('feedback', [
+  ]) // Directive adds array of definition fields to the word Form
+  .directive('definition', [
+    '$stateParams',
+    function ($stateParams) {
+      return {
+        replace: true,
+        restrict: 'E',
+        templateUrl: 'tmpls/names/directives/definition.html',
+        link: function (scope) {
+          if (!$stateParams.entry) {
+            scope.word.definitions = [{
+              content: '',
+              englishTranslation: '',
+              examples: []
+            }];
+          }
+
+          scope.add_definition = function () {
+            return scope.word.definitions.push({
+              content: '',
+              englishTranslation: '',
+              examples: []
+            });
+          };
+
+          scope.remove_definition = function (index) {
+            scope.word.definitions.splice(index, 1);
+            if (scope.word.definitions.length < 1)
+              return scope.word.definitions.push({
+                content: '',
+                englishTranslation: '',
+                examples: []
+              });
+          };
+
+          scope.add_example = function (definition) {
+            return definition.examples.push({
+              content: '',
+              englishTranslation: '',
+              type: ''
+            });
+          };
+
+          scope.remove_example = function (definition, index) {
+            return definition.examples.splice(index, 1);
+          };
+
+          scope.$watch('name.definitions', function () {
+            scope.form.$dirty = true;
+          }, true);
+        }
+      };
+    }
+  ])
+  .directive('feedback', [
     'NamesService',
     '$modal',
     '$stateParams',
