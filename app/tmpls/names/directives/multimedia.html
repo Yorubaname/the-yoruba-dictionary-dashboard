@@ -1,0 +1,34 @@
+<div class="col-xs-12">
+    <div ng-show="!!word.mediaLinks.length">
+        <div class="col-sm-5">
+            <label for="media-link" class="required">LINK</label>
+        </div>
+        <div class="col-sm-4">
+            <label for="caption">CAPTION</label>
+        </div>
+        <div class="col-sm-2">
+            <label for="type" class="required">TYPE</label>
+        </div>
+    </div>
+
+    <div class="row" ng-repeat="link in word.mediaLinks track by $index">
+        <div class="col-sm-5">
+            <textarea id="media-link" cols="10" rows="2" class="form-control" ng-model="link.link" required></textarea>
+        </div>
+        <div class="col-sm-4">
+            <textarea id="caption" cols="10" rows="2" class="form-control" ng-model="link.caption" required></textarea>
+        </div>
+        <div class="col-sm-2">
+            <select ng-model="link.type" id="type" class="form-control" required>
+                <option value="" selected="selected" disabled="disabled">-Type-</option>
+                <option value="audio">AUDIO</option>
+                <option value="video">VIDEO</option>
+            </select>
+        </div>
+        <div class="col-sm-1">
+            <a class="btn btn-xs btn-danger remove" ng-click="remove_media($index)">
+                <i class="fa fa-times"></i>
+            </a>
+        </div>
+    </div>
+</div>

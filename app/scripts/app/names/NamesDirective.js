@@ -115,7 +115,71 @@ angular.module('NamesModule')  // Directive adds the geolocation autocompletes o
             return definition.examples.splice(index, 1);
           };
 
-          scope.$watch('name.definitions', function () {
+          scope.$watch('word.definitions', function () {
+            scope.form.$dirty = true;
+          }, true);
+        }
+      };
+    }
+  ])
+  .directive('multimedia', [
+    '$stateParams',
+    function ($stateParams) {
+      return {
+        replace: true,
+        restrict: 'E',
+        templateUrl: 'tmpls/names/directives/multimedia.html',
+        link: function (scope) {
+          if (!$stateParams.entry) {
+            scope.word.mediaLinks = [];
+          }
+
+          scope.add_media = function () {
+            return scope.word.mediaLinks.push({
+              link: '',
+              caption: '',
+              type: ''
+            });
+          };
+
+          scope.remove_media = function (index) {
+            scope.word.mediaLinks.splice(index, 1);
+          };
+
+          scope.$watch('word.mediaLinks', function () {
+            scope.form.$dirty = true;
+          }, true);
+        }
+      };
+    }
+  ])
+  .directive('variants', [
+    '$stateParams', 'geolocationService',
+    function ($stateParams, geolocationService) {
+      return {
+        replace: true,
+        restrict: 'E',
+        templateUrl: 'tmpls/names/directives/variants.html',
+        link: function (scope) {
+          geolocationService.load().then(function(geolocation){
+            scope.geolocationList = geolocation.data;
+          });
+
+          if (!$stateParams.entry) {
+            scope.word.variants = [];
+          }
+
+          scope.add_variant = function () {
+            return scope.word.variants.push({
+              name: ''
+            });
+          };
+
+          scope.remove_variant = function (index) {
+            scope.word.variants.splice(index, 1);
+          };
+
+          scope.$watch('word.variants', function () {
             scope.form.$dirty = true;
           }, true);
         }
