@@ -63,7 +63,7 @@ angular.module('NamesModule').controller('NamesAddEntriesCtrl', [
         $scope.word.definitions.push({
           content: '',
           englishTranslation: '',
-          type: ''
+          examples: []
         });
       }
     });

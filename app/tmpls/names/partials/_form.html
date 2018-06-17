@@ -16,8 +16,22 @@
                     <div class="col-sm-12 col-md-6">
                         <div class="form-group form-float">
                             <div class="form-line">
-                                <label for="ipaNotation" class="required">IPA Notation</label>
-                                <input type="text" id="ipaNotation" class="form-control" ng-model="word.ipaNotation" required keyboard>
+                                <label for="partOfSpeech" class="required">Part of speech</label>
+                                <select ng-model="word.partOfSpeech" id="partOfSpeech" class="form-control" required>
+                                    <option value="" selected="selected" disabled="disabled">-Select Part of speech-</option>
+                                    <option value="noun">Noun</option>
+                                    <option value="verb">Verb</option>
+                                    <option value="pronoun">Pronoun</option>
+                                    <option value="adjective">Adjective</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-12 col-md-6">
+                        <div class="form-group form-float">
+                            <div class="form-line">
+                                <label for="ipaNotation">IPA Notation</label>
+                                <input type="text" id="ipaNotation" class="form-control" ng-model="word.ipaNotation">
                             </div>
                         </div>
                     </div>
@@ -45,22 +59,8 @@
                     <div class="col-sm-12 col-md-6">
                         <div class="form-group form-float">
                             <div class="form-line">
-                                <label for="partOfSpeech" class="required">Part of speech</label>
-                                <select ng-model="word.partOfSpeech" id="partOfSpeech" class="form-control" required>
-                                    <option value="" selected="selected" disabled="disabled">-Select Part of speech-</option>
-                                    <option value="noun">Noun</option>
-                                    <option value="verb">Verb</option>
-                                    <option value="pronoun">Pronoun</option>
-                                    <option value="adjective">Adjective</option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-sm-12 col-md-6">
-                        <div class="form-group form-float">
-                            <div class="form-line">
                                 <label for="style">Style</label>
-                                <select ng-model="word.style" id="style" class="form-control" required>
+                                <select ng-model="word.style" id="style" class="form-control">
                                     <option value="" selected="selected" disabled="disabled">-Style-</option>
                                     <option value="colloquial">Colloquial</option>
                                 </select>
@@ -92,7 +92,7 @@
                                 <span class="help-block">Enter morphology by using hyphen to separate each part, e.g.
                                     <em>Oní-àfin</em>
                                 </span>
-                                <input type="text" id="morphology" class="form-control" ng-model="name.morphology" ng-blur="generate_glossary()">
+                                <input type="text" id="morphology" class="form-control" ng-model="word.morphology" ng-blur="generate_glossary()">
                             </div>
                         </div>
                     </div>
@@ -102,11 +102,7 @@
                         <div class="form-group form-float">
                             <div class="form-line">
                                 <h5>Gloss</h5>
-                                <span class="help-block">Enter the composite part of this name and its meaning.</span>
                                 <etymology></etymology>
-                                <p class="text-right help-block">
-                                    <a ng-click="add_etymology()">Add a new part and meaning pair</a>
-                                </p>
                             </div>
                         </div>
                     </div>
@@ -117,7 +113,7 @@
                     <div class="col-sm-12">
                         <div class="form-group form-float">
                             <div class="form-line">
-                                <label for="definition" class="required">Definition</label>
+                                <label>Definition</label>
                                 <span class="help-block">If definition of word is not known, write "unknown" in the space provided</span>
                                 <definition></definition>
                                 <p class="text-right help-block">

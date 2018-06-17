@@ -13,16 +13,16 @@ angular.module('NamesModule').service('NamesService', [
       * Adds a name to the database;
       * @param nameEntry
       */
-    this.addName = function (name, fn) {
+    this.addName = function (word, fn) {
       // include logged in user's details, only if none exist - applies to accepting suggested names
-      if (!name.submittedBy)
-        name.submittedBy = $localStorage.username;
-      return api.postJson('/v1/names', name).success(function () {
-        toastr.success(name.name + ' was successfully added. Add another name');
+      if (!word.submittedBy)
+        word.submittedBy = $localStorage.username;
+      return api.postJson('/v1/names', word).success(function () {
+        toastr.success(word.word + ' was successfully added. Add another name');
         fn();
         cacheNames();
       }).error(function (error) {
-        toastr.error(name.name + ' could not be added: '+error.message);
+        toastr.error(word.word + ' could not be added: '+error.message);
       });
     };
     var getPrevAndNextNames = function (name, fn) {
@@ -60,15 +60,15 @@ angular.module('NamesModule').service('NamesService', [
       * Updates an existing name in the database;
       * @param nameEntry
       */
-    this.updateName = function (originalName, nameEntry, fn) {
-      nameEntry = angular.copy(nameEntry);
-      return api.putJson('/v1/names/' + originalName, nameEntry).success(function (resp) {
-        toastr.success(nameEntry.name + ' was successfully updated.');
+    this.updateName = function (originalName, wordEntry, fn) {
+      wordEntry = angular.copy(wordEntry);
+      return api.putJson('/v1/names/' + originalName, wordEntry).success(function (resp) {
+        toastr.success(wordEntry.word + ' was successfully updated.');
         cacheNames();
         if (fn)
           return fn(resp);
       }).error(function () {
-        toastr.error(nameEntry.name + ' could not be updated. Please try again.');
+        toastr.error(wordEntry.word + ' could not be updated. Please try again.');
       });
     };
     /**
@@ -78,17 +78,17 @@ angular.module('NamesModule').service('NamesService', [
     this.deleteName = function (entry, fn, status) {
       if (status === 'suggested')
         return api.delete('/v1/suggestions/' + entry.id).success(function () {
-          toastr.success(entry.name + ' with id: ' + entry.id + ' has been deleted successfully');
+          toastr.success(entry.word + ' with id: ' + entry.id + ' has been deleted successfully');
           return fn();
         }).error(function () {
-          toastr.error(entry.name + ' with id: ' + entry.id + ' could not be deleted. Please try again.');
+          toastr.error(entry.word + ' with id: ' + entry.id + ' could not be deleted. Please try again.');
         });
-      return api.deleteJson('/v1/names/' + entry.name, entry).success(function () {
-        toastr.success(entry.name + ' has been deleted successfully');
+      return api.deleteJson('/v1/names/' + entry.word, entry).success(function () {
+        toastr.success(entry.word + ' has been deleted successfully');
         cacheNames();
         fn();
       }).error(function () {
-        toastr.error(entry.name + ' could not be deleted. Please try again.');
+        toastr.error(entry.word + ' could not be deleted. Please try again.');
       });
     };
     this.deleteNames = function (names, fn, status) {

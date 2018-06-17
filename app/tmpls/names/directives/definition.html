@@ -7,14 +7,13 @@
     <div class="panel-body">
         <div class="row definition">
             <div class="col-sm-8">
-                <label>Definition (Yoruba)</label>
-                <textarea class="form-control" name="part[{{$index}}]" ng-model="definition.content" />
-                <span ng-show="form.part[{{$index}}].$invalid && !form.part[{{$index}}].$pristine" class="help-block text-danger">This etymology part is required</span>
+                <label for="definition" class="required">Definition (Yoruba)</label>
+                <textarea id="definition" class="form-control" name="part[{{$index}}]" ng-model="definition.content" required/>
+                <span ng-show="form.part[{{$index}}].$invalid && !form.part[{{$index}}].$pristine" class="help-block text-danger">Definition in Yoruba part is required</span>
             </div>
             <div class="col-sm-4">
                 <label>English equivalent</label>
                 <textarea class="form-control" name="meaning[{{$index}}]" ng-model="definition.englishTranslation" />
-                <span ng-show="form.meaning[{{$index}}].$invalid && !form.meaning[{{$index}}].$pristine" class="help-block text-danger">This etymology meaning is required</span>
             </div>
         </div>
         <p class="text-right help-block" ng-show="!definition.examples.length">
@@ -30,13 +29,13 @@
             </div>
             <div class="col-sm-4">
                 <label for="english-example">English equivalent</label>
-                <textarea id="english-example" cols="10" rows="3" class="form-control" ng-model="example.englishTranslation" required></textarea>
+                <textarea id="english-example" cols="10" rows="3" class="form-control" ng-model="example.englishTranslation"></textarea>
             </div>
             <div class="col-sm-2">
-                <label for="example-type">Type</label>
-                <select ng-model="example.type" id="example-type" class="form-control">
+                <label for="example-type" class="required">Type</label>
+                <select ng-model="example.type" id="example-type" class="form-control" required>
                     <option value="" selected="selected" disabled="disabled">-Type-</option>
-                    <option value="intransitive">Aphorism/Proverb</option>
+                    <option value="PROVERB">Aphorism/Proverb</option>
                 </select>
             </div>
             <a class="btn btn-xs btn-danger remove" ng-click="remove_example(definition, $exampleIndex)">

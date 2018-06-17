@@ -60,7 +60,7 @@
         <div class="heading_a"><span class="heading_text">Find Entry</span></div>
         <form ng-submit="exec_search()">
             <div class="input-group sepH_b">
-                <input class="form-control input-lg" placeholder="Enter name" id="appendedInputButton" type="text" ng-model="search.entry" typeahead="entry.name for entry in names | filter:$viewValue | limitTo:8" keyboard>
+                <input class="form-control input-lg" placeholder="Enter name" id="appendedInputButton" type="text" ng-model="search.entry" typeahead="entry.word for entry in names | filter:$viewValue | limitTo:8" keyboard>
                 <span class="input-group-btn">
                     <button class="btn btn-success btn-lg" ng-disabled="!search.entry" ng-click="exec_search()" type="button"><i class="fa fa-search"></i> Search</button>
                 </span>
@@ -83,8 +83,7 @@
         <table class="table table-yuk">
             <tbody>
                 <tr ng-repeat="entry in latestNames">
-                    <td><a ui-sref="auth.names.edit_entries({entry:entry.name})">{{entry.name}}</a></td>
-                    <td>{{entry.syllables}}</td>
+                    <td><a ui-sref="auth.names.edit_entries({entry:entry.word})">{{entry.word}}</a></td>
                 </tr>
             </tbody>
             <tfoot ng-show="latestNames.length">
@@ -122,7 +121,7 @@
         <table class="table table-yuk">
             <tbody>
                 <tr ng-repeat="entry in feedbacks">
-                    <td><a ui-sref="auth.names.edit_entries({entry:entry.name})">{{entry.name}}</a></td>
+                    <td><a ui-sref="auth.names.edit_entries({entry:entry.word})">{{entry.word}}</a></td>
                     <td>{{entry.feedback}}</td>
                     <td>{{entry.submittedAt|toDateString}}</td>
                 </tr>
