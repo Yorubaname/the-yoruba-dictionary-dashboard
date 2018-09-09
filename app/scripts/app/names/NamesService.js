@@ -29,19 +29,19 @@ angular.module("NamesModule").service("NamesService", [
           toastr.error(word.word + " could not be added: " + error.message);
         });
     };
-    var getPrevAndNextNames = function(name, fn) {
-      var index = _.findIndex($localStorage.entries, { name: name }),
+    var getPrevAndNextNames = function(word, fn) {
+      var index = _.findIndex($localStorage.entries, { word: word }),
         prev = $localStorage.entries[index - 1],
         next = $localStorage.entries[index + 1];
       return fn(prev, next);
     };
-    this.prevAndNextNames = function(name, fn) {
+    this.prevAndNextNames = function(word, fn) {
       if ($localStorage.entries && $localStorage.entries.length)
-        return getPrevAndNextNames(name, fn);
+        return getPrevAndNextNames(word, fn);
       else {
         return api.get("/v1/words").success(function(resp) {
           $localStorage.entries = resp;
-          return getPrevAndNextNames(name, fn);
+          return getPrevAndNextNames(word, fn);
         });
       }
     };
