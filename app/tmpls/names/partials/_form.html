@@ -1,169 +1,267 @@
 <p class="text-danger">* Kindly fill all required fields</p>
 
 <form class="name-entry-form" name="form" name-form>
-    <div class="row">
-        <tabset>
-            <tab heading="Basic">
-                <div class="row clearfix" style="margin-top:10px;">
-                    <div class="col-sm-12 col-md-6">
-                        <div class="form-group form-float">
-                            <div class="form-line">
-                                <label for="word" class="required">Word</label>
-                                <input type="text" id="word" class="form-control" ng-model="word.word" required keyboard>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-sm-12 col-md-6">
-                        <div class="form-group form-float">
-                            <div class="form-line">
-                                <label for="partOfSpeech" class="required">Part of speech</label>
-                                <select ng-model="word.partOfSpeech" id="partOfSpeech" class="form-control" required>
-                                    <option value="" selected="selected" disabled="disabled">-Select Part of speech-</option>
-                                    <option value="noun">Noun</option>
-                                    <option value="verb">Verb</option>
-                                    <option value="pronoun">Pronoun</option>
-                                    <option value="adjective">Adjective</option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-sm-12 col-md-6">
-                        <div class="form-group form-float">
-                            <div class="form-line">
-                                <label for="ipaNotation">IPA Notation</label>
-                                <input type="text" id="ipaNotation" class="form-control" ng-model="word.ipaNotation">
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-sm-12 col-md-6">
-                        <div class="form-group form-float">
-                            <div class="form-line">
-                                <label for="pronunciation">Pronunciation
-                                    <i class="glyphicon glyphicon-question-sign" title="If you can't properly tone-mark the word, give us your best alphabetic English approximation of how the name is pronounced. e.g. Oh-loo-nee-yee"></i>
-                                </label>
-                                <input type="text" id="pronunciation" class="form-control" ng-model="word.pronunciation">
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-sm-12 col-md-6">
-                        <div class="form-group form-float">
-                            <div class="form-line">
-                                <label for="gramFeature">Grammatical Feature</label>
-                                <select ng-model="word.grammaticalFeature" id="gramFeature" class="form-control">
-                                    <option value="" selected="selected" disabled="disabled">-Grammatical Feature-</option>
-                                    <option value="intransitive">Intransitive</option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-sm-12 col-md-6">
-                        <div class="form-group form-float">
-                            <div class="form-line">
-                                <label for="style">Style</label>
-                                <select ng-model="word.style" id="style" class="form-control">
-                                    <option value="" selected="selected" disabled="disabled">-Style-</option>
-                                    <option value="colloquial">Colloquial</option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-sm-12">
-                        <div class="form-group form-float">
-                            <div class="form-line">
-                                <label for="geolocation" class="required">Geolocation</label>
-                                <span class="help-block">Where is this word most commonly used? Choose "General" if this word applies to more than
-                                    one region, or choose "Others/Don't Know" if you are not sure of its specific origin.
-                                </span>
-                                <tags-input ng-model="word.geoLocation" id="geolocation" add-on-space="true" min-length="3" display-property="place" add-from-autocomplete-only="true"
-                                    placeholder="Select geolocation" required>
-                                    <auto-complete source="query($query)" display-property="place" load-on-focus="true" max-results-to-show="20"></auto-complete>
-                                </tags-input>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </tab>
-            <tab heading="Morphology">
-                <div class="row clearfix" style="margin-top:10px;">
-                    <div class="col-sm-12">
-                        <div class="form-group form-float">
-                            <div class="form-line">
-                                <label for="morphology">Morphology</label>
-                                <span class="help-block">Enter morphology by using hyphen to separate each part, e.g.
-                                    <em>Oní-àfin</em>
-                                </span>
-                                <input type="text" id="morphology" class="form-control" ng-model="word.morphology" ng-blur="generate_glossary()">
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="row clearfix" style="margin-top:10px;">
-                    <div class="col-sm-12">
-                        <div class="form-group form-float">
-                            <div class="form-line">
-                                <h5>Gloss</h5>
-                                <etymology></etymology>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </tab>
-            <tab heading="Definition">
-                <div class="row clearfix" style="margin-top:10px;">
-                    <div class="col-sm-12">
-                        <div class="form-group form-float">
-                            <div class="form-line">
-                                <label>Definition</label>
-                                <span class="help-block">If definition of word is not known, write "unknown" in the space provided</span>
-                                <definition></definition>
-                                <p class="text-right help-block">
-                                    <a ng-click="add_definition()">Add a new definition</a>
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </tab>
-            <tab heading="Multimedia">
-                <div class="row clearfix" style="margin-top:10px;">
-                    <div class="col-sm-12">
-                        <div class="form-group form-float">
-                            <div class="form-line">
-                                <multimedia></multimedia>
-                                <p class="text-right help-block">
-                                    <a ng-click="add_media()">Add new media link</a>
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </tab>
-            <tab heading="Variants">
-                <div class="row clearfix" style="margin-top:10px;">
-                    <div class="col-sm-12">
-                        <div class="form-group form-float">
-                            <div class="form-line">
-                                <variants></variants>
-                                <p class="text-right help-block">
-                                    <a ng-click="add_variant()">Add new variant</a>
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </tab>
-        </tabset>
-    </div>
-
-    <div class="row">
-        <div class="col-sm-12">
-            <hr>
-            <button type="submit" class="btn btn-lg btn-success" ng-click="submit()" ng-disabled="form.$invalid || !form.$dirty">{{ new ? 'Submit for Review' : 'Save Entry' }}</button>
-
-            <button class="btn btn-lg btn-info" ng-click="publish()" ng-disabled="form.$invalid || !form.$dirty" ng-show="isAdmin || isLexicographer && !new && name.state!='PUBLISHED'">Publish</button>
-
-            <a ng-click="delete()" class="btn btn-link btn-md text-muted pull-right" ng-hide="new || !isAdmin">Delete {{name.name}}</a>
+  <div class="row">
+    <tabset>
+      <tab heading="Basic">
+        <div class="row clearfix" style="margin-top:10px;">
+          <div class="col-sm-12 col-md-6">
+            <div class="form-group form-float">
+              <div class="form-line">
+                <label for="word" class="required">Word</label>
+                <input
+                  type="text"
+                  id="word"
+                  class="form-control"
+                  ng-model="word.word"
+                  required
+                  keyboard
+                />
+              </div>
+            </div>
+          </div>
+          <div class="col-sm-12 col-md-6">
+            <div class="form-group form-float">
+              <div class="form-line">
+                <label for="partOfSpeech" class="required"
+                  >Part of speech</label
+                >
+                <select
+                  ng-model="word.partOfSpeech"
+                  id="partOfSpeech"
+                  class="form-control"
+                  required
+                >
+                  <option value="" selected="selected" disabled="disabled"
+                    >-Select Part of speech-</option
+                  >
+                  <option value="noun">Noun</option>
+                  <option value="verb">Verb</option>
+                  <option value="pronoun">Pronoun</option>
+                  <option value="adjective">Adjective</option>
+                </select>
+              </div>
+            </div>
+          </div>
+          <div class="col-sm-12 col-md-6">
+            <div class="form-group form-float">
+              <div class="form-line">
+                <label for="ipaNotation">IPA Notation</label>
+                <input
+                  type="text"
+                  id="ipaNotation"
+                  class="form-control"
+                  ng-model="word.ipaNotation"
+                />
+              </div>
+            </div>
+          </div>
+          <div class="col-sm-12 col-md-6">
+            <div class="form-group form-float">
+              <div class="form-line">
+                <label for="pronunciation"
+                  >Pronunciation
+                  <i
+                    class="glyphicon glyphicon-question-sign"
+                    title="If you can't properly tone-mark the word, give us your best alphabetic English approximation of how the name is pronounced. e.g. Oh-loo-nee-yee"
+                  ></i>
+                </label>
+                <input
+                  type="text"
+                  id="pronunciation"
+                  class="form-control"
+                  ng-model="word.pronunciation"
+                />
+              </div>
+            </div>
+          </div>
+          <div class="col-sm-12 col-md-6">
+            <div class="form-group form-float">
+              <div class="form-line">
+                <label for="gramFeature">Grammatical Feature</label>
+                <select
+                  ng-model="word.grammaticalFeature"
+                  id="gramFeature"
+                  class="form-control"
+                >
+                  <option value="" selected="selected" disabled="disabled"
+                    >-Grammatical Feature-</option
+                  >
+                  <option value="intransitive">Intransitive</option>
+                </select>
+              </div>
+            </div>
+          </div>
+          <div class="col-sm-12 col-md-6">
+            <div class="form-group form-float">
+              <div class="form-line">
+                <label for="style">Style</label>
+                <select ng-model="word.style" id="style" class="form-control">
+                  <option value="" selected="selected" disabled="disabled"
+                    >-Style-</option
+                  >
+                  <option value="colloquial">Colloquial</option>
+                </select>
+              </div>
+            </div>
+          </div>
+          <div class="col-sm-12 col-md-6">
+            <div class="form-group form-float">
+              <div class="form-line">
+                <label for="geolocation" class="required">Geolocation</label>
+                <span class="help-block"
+                  >Where is this word most commonly used? Choose "General" if
+                  this word applies to more than one region, or choose
+                  "Others/Don't Know" if you are not sure of its specific
+                  origin.
+                </span>
+                <tags-input
+                  ng-model="word.geoLocation"
+                  id="geolocation"
+                  add-on-space="true"
+                  min-length="3"
+                  display-property="place"
+                  add-from-autocomplete-only="true"
+                  placeholder="Select geolocation"
+                  required
+                >
+                  <auto-complete
+                    source="query($query)"
+                    display-property="place"
+                    load-on-focus="true"
+                    max-results-to-show="20"
+                  ></auto-complete>
+                </tags-input>
+              </div>
+            </div>
+          </div>
+          <div class="col-sm-12 col-md-6">
+            <div class="form-group">
+              <label for="syllables">Syllable breakdown</label>
+              <span class="help-block"
+                >Enter syllable breakdown by separating each syllable with an
+                hyphen, e.g <em>a-lá-rè-nà</em></span
+              >
+              <br />
+              <input
+                type="text"
+                id="syllables"
+                class="form-control ng-pristine ng-valid ng-touched"
+                ng-model="word.syllables"
+              />
+            </div>
+          </div>
         </div>
-    </div>
+      </tab>
+      <tab heading="Morphology">
+        <div class="row clearfix" style="margin-top:10px;">
+          <div class="col-sm-12">
+            <div class="form-group form-float">
+              <div class="form-line">
+                <label for="morphology">Morphology</label>
+                <span class="help-block"
+                  >Enter morphology by using hyphen to separate each part, e.g.
+                  <em>Oní-àfin</em>
+                </span>
+                <input
+                  type="text"
+                  id="morphology"
+                  class="form-control"
+                  ng-model="word.morphology"
+                  ng-blur="generate_glossary()"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row clearfix" style="margin-top:10px;">
+          <div class="col-sm-12">
+            <div class="form-group form-float">
+              <div class="form-line">
+                <h5>Gloss</h5>
+                <etymology></etymology>
+              </div>
+            </div>
+          </div>
+        </div>
+      </tab>
+      <tab heading="Definition">
+        <div class="row clearfix" style="margin-top:10px;">
+          <div class="col-sm-12">
+            <div class="form-group form-float">
+              <div class="form-line">
+                <label>Definition</label>
+                <span class="help-block"
+                  >If definition of word is not known, write "unknown" in the
+                  space provided</span
+                >
+                <definition></definition>
+                <p class="text-right help-block">
+                  <a ng-click="add_definition()">Add a new definition</a>
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </tab>
+      <tab heading="Multimedia">
+        <div class="row clearfix" style="margin-top:10px;">
+          <div class="col-sm-12">
+            <div class="form-group form-float">
+              <div class="form-line">
+                <multimedia></multimedia>
+                <p class="text-right help-block">
+                  <a ng-click="add_media()">Add new media link</a>
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </tab>
+      <tab heading="Variants">
+        <div class="row clearfix" style="margin-top:10px;">
+          <div class="col-sm-12">
+            <div class="form-group form-float">
+              <div class="form-line">
+                <variants></variants>
+                <p class="text-right help-block">
+                  <a ng-click="add_variant()">Add new variant</a>
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </tab>
+    </tabset>
+  </div>
 
+  <div class="row">
+    <div class="col-sm-12">
+      <hr />
+      <button
+        type="submit"
+        class="btn btn-lg btn-success"
+        ng-click="submit()"
+        ng-disabled="form.$invalid || !form.$dirty"
+      >
+        {{ new ? "Submit for Review" : "Save Entry" }}
+      </button>
+
+      <button
+        class="btn btn-lg btn-info"
+        ng-click="publish()"
+        ng-disabled="form.$invalid || !form.$dirty"
+        ng-show="isAdmin || isLexicographer && !new && name.state!='PUBLISHED'"
+      >
+        Publish
+      </button>
+
+      <a
+        ng-click="delete()"
+        class="btn btn-link btn-md text-muted pull-right"
+        ng-hide="new || !isAdmin"
+        >Delete {{ name.name }}</a
+      >
+    </div>
+  </div>
 </form>
