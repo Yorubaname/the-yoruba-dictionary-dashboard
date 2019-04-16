@@ -16,6 +16,13 @@ angular
           $scope.word = {};
         });
       };
+
+      $scope.publish = function() {
+        console.log(
+          "Each new word must go through review before getting published."
+        );
+      };
+
       $scope.generate_glossary = function() {
         // split the morphology with the dashes if it's not empty
         if ($scope.word.morphology) {
@@ -207,8 +214,8 @@ angular
             entry.state = "PUBLISHED";
             entry.indexed = true;
           });
+        // assume entry is published and objective is to unpublish it
         else
-          // assume entry is published and objective is to unpublish it
           return namesService
             .removeNameFromIndex(entry.word)
             .success(function() {
@@ -281,8 +288,8 @@ angular
         } else toastr.warning("Please select words to accept.");
       };
       /**
-             * Adds the suggested name to the list of words eligible to be added to search index
-             */
+       * Adds the suggested name to the list of words eligible to be added to search index
+       */
       var acceptSuggestedName = function(entry) {
         // Change the state of the 'SUGGESTED' name TO 'NEW' to put it on the review queue
         entry.state = "NEW";

@@ -251,6 +251,7 @@
         class="btn btn-lg btn-info"
         ng-click="publish()"
         ng-disabled="form.$invalid || !form.$dirty"
+        ng-hide="new"
         ng-show="isAdmin || isLexicographer && !new && name.state!='PUBLISHED'"
       >
         Publish
