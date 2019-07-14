@@ -426,7 +426,7 @@ module.exports = function(grunt) {
       grunt.task.run([
         "jshint:check",
         "clean:server",
-        "ngconstant:development",
+        "ngconstant:staging",
         //'wiredep',
         "concurrent:server",
         "autoprefixer:server",
