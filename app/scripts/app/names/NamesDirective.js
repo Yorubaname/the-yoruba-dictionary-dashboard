@@ -64,7 +64,7 @@ angular
               });
           };
           scope.$watch(
-            "name.etymology",
+            "word.etymology",
             function() {
               scope.form.$dirty = true;
             },

@@ -26,12 +26,12 @@ angular
       $scope.generate_glossary = function() {
         // split the morphology with the dashes if it's not empty
         if ($scope.word.morphology) {
-          let etymology = $scope.word.etymology;
-          const splitMorphology = $scope.word.morphology.split("-");
+          var etymology = $scope.word.etymology;
+          var splitMorphology = $scope.word.morphology.split("-");
           // add each entry to etymology list if it does not exist already
           for (var i = 0; i < splitMorphology.length; i++) {
-            const newPart = splitMorphology[i];
-            const oldPart = etymology[i];
+            var newPart = splitMorphology[i];
+            var oldPart = etymology[i];
             if (!oldPart) {
               etymology.push({
                 part: newPart,
@@ -81,12 +81,12 @@ angular
       $scope.generate_glossary = function() {
         // split the morphology with the dashes if it's not empty
         if ($scope.word.morphology) {
-          let etymology = $scope.word.etymology;
-          const splitMorphology = $scope.word.morphology.split("-");
+          var etymology = $scope.word.etymology;
+          var splitMorphology = $scope.word.morphology.split("-");
           // add each entry to etymology list if it does not exist already
           for (var i = 0; i < splitMorphology.length; i++) {
-            const newPart = splitMorphology[i];
-            const oldPart = etymology[i];
+            var newPart = splitMorphology[i];
+            var oldPart = etymology[i];
             if (!oldPart) {
               etymology.push({
                 part: newPart,
