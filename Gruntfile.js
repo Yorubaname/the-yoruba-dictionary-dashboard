@@ -7,7 +7,7 @@
 // use this if you want to recursively match all subfolders:
 // 'test/spec/**/*.js'
 
-module.exports = function(grunt) {
+module.exports = function (grunt) {
   // Load grunt tasks automatically
   // Instead of having to do grunt.loadNpmTasks for each plugin manually
   require("load-grunt-tasks")(grunt);
@@ -74,7 +74,7 @@ module.exports = function(grunt) {
       livereload: {
         options: {
           open: true,
-          middleware: function(connect) {
+          middleware: function (connect) {
             return [
               serveStatic(".tmp"),
               connect().use(
@@ -90,7 +90,7 @@ module.exports = function(grunt) {
       test: {
         options: {
           port: 9001,
-          middleware: function(connect) {
+          middleware: function (connect) {
             return [
               serveStatic(".tmp"),
               serveStatic("test"),
@@ -419,7 +419,7 @@ module.exports = function(grunt) {
   grunt.registerTask(
     "serve",
     "Compile then start a connect web server",
-    function(target) {
+    function (target) {
       if (target === "dist") {
         return grunt.task.run(["build", "connect:dist:keepalive"]);
       }
@@ -440,7 +440,7 @@ module.exports = function(grunt) {
   grunt.registerTask(
     "server",
     'DEPRECATED TASK. Use the "serve" task instead',
-    function(target) {
+    function (target) {
       grunt.log.warn(
         "The `server` task has been deprecated. Use `grunt serve` to start a server."
       );

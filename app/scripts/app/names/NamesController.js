@@ -275,18 +275,6 @@ angular
           toastr.warning("No words selected");
         }
       };
-      // Accept Suggested Name/s
-      $scope.accept = function(entry) {
-        if (entry) return acceptSuggestedName(entry);
-        var entries = $.map($scope.wordsList, function(elem) {
-          if (elem.isSelected === true) return elem;
-        });
-        if (entries.length > 0) {
-          return entries.forEach(function(entry) {
-            acceptSuggestedName(entry);
-          });
-        } else toastr.warning("Please select words to accept.");
-      };
       /**
        * Adds the suggested name to the list of words eligible to be added to search index
        */
@@ -298,6 +286,18 @@ angular
             $scope.wordsList.splice($scope.wordsList.indexOf(entry), 1);
           });
         }
+      };
+      // Accept Suggested Name/s
+      $scope.accept = function(entry) {
+        if (entry) return acceptSuggestedName(entry);
+        var entries = $.map($scope.wordsList, function(elem) {
+          if (elem.isSelected === true) return elem;
+        });
+        if (entries.length > 0) {
+          return entries.forEach(function(entry) {
+            acceptSuggestedName(entry);
+          });
+        } else toastr.warning("Please select words to accept.");
       };
     }
   ])

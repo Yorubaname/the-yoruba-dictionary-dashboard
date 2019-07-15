@@ -9,10 +9,41 @@ angular.module("NamesModule").service("NamesService", [
   "$timeout",
   "_",
   function(api, toastr, $state, $localStorage, $timeout, _) {
+    var cacheNames = function() {
+      return api.get("/v1/words?all=true").success(function(resp) {
+        $localStorage.entries = resp;
+      });
+    };
+
+    // TODO turn to a component
+    var isEmptyObj = function(obj) {
+      // null and undefined are "empty"
+      if (obj === null) {
+        return true;
+      }
+      // Assume if it has a length property with a non-zero value
+      // that that property is correct.
+      if (obj.length > 0) {
+        return false;
+      }
+      if (obj.length === 0) {
+        return true;
+      }
+      // Otherwise, does it have any properties of its own?
+      // Note that this doesn't handle
+      // toString and valueOf enumeration bugs in IE < 9
+      for (var key in obj) {
+        if (Object.prototype.hasOwnProperty.call(obj, key)) {
+          return false;
+        }
+      }
+      return true;
+    };
+
     /**
-      * Adds a name to the database;
-      * @param nameEntry
-      */
+     * Adds a name to the database;
+     * @param nameEntry
+     */
     this.addName = function(word, fn) {
       // include logged in user's details, only if none exist - applies to accepting suggested names
       if (!word.submittedBy) word.submittedBy = $localStorage.username;
@@ -45,11 +76,6 @@ angular.module("NamesModule").service("NamesService", [
         });
       }
     };
-    var cacheNames = function() {
-      return api.get("/v1/words?all=true").success(function(resp) {
-        $localStorage.entries = resp;
-      });
-    };
     this.getCachedNames = function(fn) {
       if ($localStorage.entries && $localStorage.entries.length)
         return fn($localStorage.entries);
@@ -63,9 +89,9 @@ angular.module("NamesModule").service("NamesService", [
       return api.get("/v1/search", { q: name });
     };
     /**
-      * Updates an existing name in the database;
-      * @param nameEntry
-      */
+     * Updates an existing name in the database;
+     * @param nameEntry
+     */
     this.updateName = function(originalName, wordEntry, fn) {
       wordEntry = angular.copy(wordEntry);
       return api
@@ -82,9 +108,9 @@ angular.module("NamesModule").service("NamesService", [
         });
     };
     /**
-      * Deletes a name from the database;
-      * @param nameEntry
-      */
+     * Deletes a name from the database;
+     * @param nameEntry
+     */
     this.deleteName = function(entry, fn, status) {
       if (status === "suggested")
         return api
@@ -143,9 +169,9 @@ angular.module("NamesModule").service("NamesService", [
         });
     };
     /**
-       * Get a name
-       * returns the one or zero result
-       */
+     * Get a name
+     * returns the one or zero result
+     */
     this.getName = function(name, duplicate, fn) {
       return api
         .get("/v1/words/" + name, { duplicates: duplicate })
@@ -224,30 +250,6 @@ angular.module("NamesModule").service("NamesService", [
         .error(function() {
           return toastr.error("Feedback was not deleted. Please try again.");
         });
-    };
-    // TODO turn to a component
-    var isEmptyObj = function(obj) {
-      // null and undefined are "empty"
-      if (obj === null) {
-        return true;
-      }
-      // Assume if it has a length property with a non-zero value
-      // that that property is correct.
-      if (obj.length > 0) {
-        return false;
-      }
-      if (obj.length === 0) {
-        return true;
-      }
-      // Otherwise, does it have any properties of its own?
-      // Note that this doesn't handle
-      // toString and valueOf enumeration bugs in IE < 9
-      for (var key in obj) {
-        if (Object.prototype.hasOwnProperty.call(obj, key)) {
-          return false;
-        }
-      }
-      return true;
     };
   }
 ]);
