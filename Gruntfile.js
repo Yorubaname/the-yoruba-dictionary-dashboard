@@ -498,7 +498,7 @@ module.exports = function(grunt) {
   ]);
 
   // build for running in local. Env.baseUrl will be set to localhost:8081
-  grunt.registerTask("heroku", [
+  grunt.registerTask("heroku:staging", [
     "jshint",
     "clean:dist",
     "ngconstant:staging",
