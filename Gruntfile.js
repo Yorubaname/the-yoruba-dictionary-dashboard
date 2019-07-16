@@ -24,6 +24,16 @@ module.exports = function (grunt) {
 
   // Define the configuration for all the tasks
   grunt.initConfig({
+    surge: {
+      'YorubaWordDashboard': {
+        options: {
+          // The path or directory to your compiled project
+          project: `${appConfig.dist}/`,
+          // The domain or subdomain to deploy to
+          domain: 'https://yorubaword-dashboard.surge.sh'
+        }
+      }
+    },
     // Project settings
     yeoman: appConfig,
 
@@ -481,26 +491,6 @@ module.exports = function (grunt) {
   grunt.registerTask("devbuild", [
     "jshint",
     "clean:dist",
-    "ngconstant:development",
-    //'wiredep', // TODO investigate as this injects jquery. Should not be needed
-    "useminPrepare",
-    "concurrent:dist",
-    "autoprefixer",
-    "concat",
-    "ngAnnotate",
-    "copy:dist",
-    //'cdnify',
-    "cssmin",
-    "uglify",
-    "filerev",
-    "usemin",
-    "htmlmin"
-  ]);
-
-  // build for running in local. Env.baseUrl will be set to localhost:8081
-  grunt.registerTask("heroku:staging", [
-    "jshint",
-    "clean:dist",
     "ngconstant:staging",
     //'wiredep', // TODO investigate as this injects jquery. Should not be needed
     "useminPrepare",
@@ -516,6 +506,8 @@ module.exports = function (grunt) {
     "usemin",
     "htmlmin"
   ]);
+
+  grunt.registerTask('deploy', ['devbuild', 'surge']);
 
   grunt.registerTask("default", ["newer:jshint", "test", "build"]);
 };
