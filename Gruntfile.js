@@ -419,7 +419,7 @@ module.exports = function (grunt) {
         constants: {
           ENV: {
             name: "production",
-            baseUrl: "https://www.yorubaword.com"
+            baseUrl: "http://www.yorubaword.com"
           }
         }
       }
@@ -507,7 +507,8 @@ module.exports = function (grunt) {
     "htmlmin"
   ]);
 
-  grunt.registerTask('deploy', ['devbuild', 'surge']);
+  grunt.registerTask('devdeploy', ['devbuild', 'surge']);
+  grunt.registerTask('deploy', ['build', 'surge']);
 
   grunt.registerTask("default", ["newer:jshint", "test", "build"]);
 };
