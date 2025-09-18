@@ -1,7 +1,9 @@
 {
   "name": "dashboardapp",
   "version": "0.0.0",
-  "dependencies": {},
+  "dependencies": {
+    "dashboardapp": "file:"
+  },
   "repository": {},
   "devDependencies": {
     "grunt": "^1.0.4",
