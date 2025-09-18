@@ -396,7 +396,7 @@ module.exports = function (grunt) {
         constants: {
           ENV: {
             name: "development",
-            baseUrl: "http://localhost:8081"
+            baseUrl: 'http://localhost:9001/api' 
           }
         }
       },
@@ -437,7 +437,7 @@ module.exports = function (grunt) {
       grunt.task.run([
         "jshint:check",
         "clean:server",
-        "ngconstant:staging",
+        "ngconstant:development",
         //'wiredep',
         "concurrent:server",
         "autoprefixer:server",

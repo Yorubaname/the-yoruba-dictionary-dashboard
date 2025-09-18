@@ -114,7 +114,7 @@ angular.module("NamesModule").service("NamesService", [
     this.deleteName = function(entry, fn, status) {
       if (status === "suggested")
         return api
-          .delete("/v1/suggestions/" + entry.id)
+          .delete("/v1/words/suggestions/" + entry.id)
           .success(function() {
             toastr.success(
               entry.word +
@@ -147,7 +147,7 @@ angular.module("NamesModule").service("NamesService", [
       words = _.pluck(words, "word");
       if (status === "suggested")
         return api
-          .deleteJson("/v1/suggestions/batch", words)
+          .deleteJson("/v1/words/suggestions/batch", words)
           .success(function() {
             toastr.success(words.length + " suggested words have been deleted");
             return fn();
@@ -184,7 +184,7 @@ angular.module("NamesModule").service("NamesService", [
       filter.page = filter.page || 1;
       filter.count = filter.count || 50;
       filter.orderBy = "createdAt";
-      if (filter.status === "suggested") return api.get("/v1/suggestions");
+      if (filter.status === "suggested") return api.get("/v1/words/suggestions");
       else if (filter.status === "published") filter.state = "PUBLISHED";
       else if (filter.status === "unpublished") filter.state = "NEW";
       else if (filter.status === "modified") filter.state = "MODIFIED";
@@ -192,8 +192,8 @@ angular.module("NamesModule").service("NamesService", [
     };
     this.countNames = function(status, fn) {
       var endpoint = "/v1/words/meta";
-      if (status === "published") endpoint = "/v1/search/meta";
-      if (status === "suggested") endpoint = "/v1/suggestions/meta";
+      if (status === "published") endpoint = "/v1/words/search/meta";
+      if (status === "suggested") endpoint = "/v1/words/suggestions/meta";
       return api.get(endpoint, { count: true }).success(function(resp) {
         if (status === "modified") return fn(resp.totalModifiedNames);
         else if (status === "published") return fn(resp.totalPublishedNames);
@@ -204,28 +204,28 @@ angular.module("NamesModule").service("NamesService", [
       });
     };
     this.getRecentlyIndexedNames = function(fn) {
-      return api.get("/v1/search/activity?q=index").success(fn);
+      return api.get("/v1/words/search/activity?q=index").success(fn);
     };
     this.addNameToIndex = function(name) {
-      return api.postJson("/v1/search/indexes/" + name);
+      return api.postJson("/v1/words/search/indexes/" + name);
     };
     this.removeNameFromIndex = function(name) {
-      return api.deleteJson("/v1/search/indexes/" + name);
+      return api.deleteJson("/v1/words/search/indexes/" + name);
     };
     this.addNamesToIndex = function(namesJsonArray) {
       var words = _.pluck(namesJsonArray, "word");
-      return api.postJson("/v1/search/indexes/batch", words);
+      return api.postJson("/v1/words/search/indexes/batch", words);
     };
     this.removeNamesFromIndex = function(namesJsonArray) {
       var words = _.pluck(namesJsonArray, "word");
-      return api.deleteJson("/v1/search/indexes/batch", words);
+      return api.deleteJson("/v1/words/search/indexes/batch", words);
     };
     this.getRecentFeedbacks = function(fn) {
-      return api.get("/v1/feedbacks").success(fn);
+      return api.get("/v1/words/feedbacks").success(fn);
     };
     this.getFeedback = function(word, fn) {
       return api
-        .get("/v1/feedbacks/", {
+        .get("/v1/words/feedbacks/", {
           word: word,
           feedback: true
         })
@@ -235,7 +235,7 @@ angular.module("NamesModule").service("NamesService", [
     };
     this.deleteFeedbacks = function(word, fn) {
       return api
-        .deleteJson("/v1/feedbacks/?word=" + word)
+        .deleteJson("/v1/words/feedbacks/?word=" + word)
         .success(fn)
         .error(function() {
           return toastr.error(
@@ -245,7 +245,7 @@ angular.module("NamesModule").service("NamesService", [
     };
     this.deleteFeedback = function(id, fn) {
       return api
-        .deleteJson("/v1/feedbacks/" + id)
+        .deleteJson("/v1/words/feedbacks/" + id)
         .success(fn)
         .error(function() {
           return toastr.error("Feedback was not deleted. Please try again.");
