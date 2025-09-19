@@ -78,7 +78,7 @@ module.exports = function (grunt) {
       options: {
         port: 9000,
         // Change this to '0.0.0.0' to access the server from outside.
-        hostname: "0.0.0.0",
+        hostname: "127.0.0.1",
         livereload: 35729
       },
       livereload: {
@@ -396,7 +396,7 @@ module.exports = function (grunt) {
         constants: {
           ENV: {
             name: "development",
-            baseUrl: 'http://localhost:9001/api' 
+            baseUrl: 'http://local.yorubaword.com:9001/api'
           }
         }
       },
