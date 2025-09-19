@@ -8,7 +8,7 @@ angular.module('AuthModule').config([
 
       // Login Page
       .state('login', {
-        page_title: 'Yoruba Names - Admin - Login',
+        page_title: 'Yoruba Words - Admin - Login',
         url: '/login',
         templateUrl: 'tmpls/login.html',
         controller: 'AuthController',
@@ -29,7 +29,7 @@ angular.module('AuthModule').config([
 
       // Dashboard
       .state('auth.home', {
-        page_title: 'Yoruba Names - Admin - Dashboard',
+        page_title: 'Yoruba Words - Admin - Dashboard',
         url: '/',
         templateUrl: 'tmpls/dashboard.html',
         ncyBreadcrumb: {label: 'Home'},

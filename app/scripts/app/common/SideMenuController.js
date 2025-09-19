@@ -16,9 +16,9 @@ angular.module('CommonModule').controller('SideMenuController', [
       },
       {
         id: 1,
-        title: 'Names Entries',
+        title: 'Word Entries',
         icon: 'fa fa-list-ol first_level_icon',
-        submenu_title: 'Names Entries',
+        submenu_title: 'Word Entries',
         submenu: [
           {
             title: 'Add Entries',
@@ -29,15 +29,15 @@ angular.module('CommonModule').controller('SideMenuController', [
                             link: "auth.names.list_entries({status:'all'})"
                         },*/
           {
-            title: 'Published Names',
+            title: 'Published Words',
             link: 'auth.names.list_entries({status:\'published\'})'
           },
           {
-            title: 'Unpublished Names',
+            title: 'Unpublished Words',
             link: 'auth.names.list_entries({status:\'unpublished\'})'
           },
           {
-            title: 'Suggested Names',
+            title: 'Suggested Words',
             link: 'auth.names.list_entries({status:\'suggested\'})'
           },
           {
