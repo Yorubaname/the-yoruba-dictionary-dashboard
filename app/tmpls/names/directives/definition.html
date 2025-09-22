@@ -8,8 +8,10 @@
         <div class="row definition">
             <div class="col-sm-8">
                 <label for="definition" class="required">Definition (Yoruba)</label>
-                <textarea id="definition" class="form-control" name="part[{{$index}}]" ng-model="definition.content" required/>
-                <span ng-show="form.part[{{$index}}].$invalid && !form.part[{{$index}}].$pristine" class="help-block text-danger">Definition in Yoruba part is required</span>
+                <textarea id="definition" class="form-control" name="part[{{$index}}]" ng-model="definition.content"
+                    required></textarea>
+                <span ng-show="form.part[{{$index}}].$invalid && !form.part[{{$index}}].$pristine"
+                    class="help-block text-danger">Definition in Yoruba part is required</span>
             </div>
             <div class="col-sm-4">
                 <label>English equivalent</label>
@@ -25,11 +27,13 @@
             </div>
             <div class="col-sm-6">
                 <label for="yoruba-example">In Yoruba</label>
-                <textarea id="yoruba-example" cols="10" rows="3" class="form-control" ng-model="example.content" required></textarea>
+                <textarea id="yoruba-example" cols="10" rows="3" class="form-control" ng-model="example.content"
+                    required></textarea>
             </div>
             <div class="col-sm-4">
                 <label for="english-example">English equivalent</label>
-                <textarea id="english-example" cols="10" rows="3" class="form-control" ng-model="example.englishTranslation"></textarea>
+                <textarea id="english-example" cols="10" rows="3" class="form-control"
+                    ng-model="example.englishTranslation"></textarea>
             </div>
             <div class="col-sm-2">
                 <label for="example-type" class="required">Type</label>

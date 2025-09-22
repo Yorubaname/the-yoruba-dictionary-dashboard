@@ -192,7 +192,7 @@ angular
         templateUrl: "tmpls/names/directives/variants.html",
         link: function (scope) {
           geolocationService.load().then(function (geolocation) {
-            scope.geolocationList = geolocation.data;
+            scope.geolocationList = geolocation;
           });
 
           if (!$stateParams.entry) {
