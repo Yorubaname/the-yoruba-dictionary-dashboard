@@ -51,7 +51,7 @@
               <div class="form-line">
                 <label for="gramFeature">Grammatical Feature</label>
                 <select ng-model="word.grammaticalFeature" id="gramFeature" class="form-control">
-                  <option value="" selected="selected" disabled="disabled">-Grammatical Feature-</option>
+                  <option value="" ng-value="null" selected="selected">-Grammatical Feature-</option>
                   <option value="intransitive">Intransitive</option>
                 </select>
               </div>
@@ -62,7 +62,7 @@
               <div class="form-line">
                 <label for="style">Style</label>
                 <select ng-model="word.style" id="style" class="form-control">
-                  <option value="" selected="selected">-Style-</option>
+                  <option value="" ng-value="null" selected="selected">-Style-</option>
                   <option value="colloquial">Colloquial</option>
                 </select>
               </div>
