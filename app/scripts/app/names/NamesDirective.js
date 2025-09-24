@@ -199,6 +199,15 @@ angular
             scope.word.variants = [];
           }
 
+          scope.updateGeolocation = function (variant) {
+            var selectedGeo = scope.geolocationList.find(function (geo) {
+              return geo.place === variant.geolocation.place;
+            });
+            if (selectedGeo) {
+              variant.geolocation.region = selectedGeo.region;
+            }
+          };
+
           scope.add_variant = function () {
             return scope.word.variants.push({
               word: "",

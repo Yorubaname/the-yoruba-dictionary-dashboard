@@ -19,7 +19,7 @@
       <div class="form-group form-float">
         <div class="form-line">
           <select ng-model="variant.geolocation.place" ng-options="geo.place as geo.place for geo in geolocationList"
-            class="form-control" required>
+            class="form-control" required ng-change="updateGeolocation(variant)">
             <option value="" selected="selected" disabled="disabled">- GEO -</option>
           </select>
         </div>
