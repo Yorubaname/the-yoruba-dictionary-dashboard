@@ -9,7 +9,8 @@
             <div class="form-group form-float">
               <div class="form-line">
                 <label for="word" class="required">Word</label>
-                <input type="text" id="word" class="form-control" ng-model="word.word" required keyboard />
+                <input type="text" id="word" class="form-control" ng-model="word.word" required keyboard
+                  ng-disabled="word.state" />
               </div>
             </div>
           </div>

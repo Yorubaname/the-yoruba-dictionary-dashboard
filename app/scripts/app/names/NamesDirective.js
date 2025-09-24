@@ -52,7 +52,7 @@ angular
       return {
         replace: true,
         restrict: "E",
-        templateUrl: "tmpls/names/directives/etymology.html",
+        templateUrl: "tmpls/words/directives/etymology.html",
         link: function (scope) {
           if (!$stateParams.entry) {
             scope.word.etymology = [];
@@ -94,7 +94,7 @@ angular
       return {
         replace: true,
         restrict: "E",
-        templateUrl: "tmpls/names/directives/definition.html",
+        templateUrl: "tmpls/words/directives/definition.html",
         link: function (scope) {
           if (!$stateParams.entry) {
             scope.word.definitions = [
@@ -153,7 +153,7 @@ angular
       return {
         replace: true,
         restrict: "E",
-        templateUrl: "tmpls/names/directives/multimedia.html",
+        templateUrl: "tmpls/words/directives/multimedia.html",
         link: function (scope) {
           if (!$stateParams.entry) {
             scope.word.mediaLinks = [];
@@ -189,7 +189,7 @@ angular
       return {
         replace: true,
         restrict: "E",
-        templateUrl: "tmpls/names/directives/variants.html",
+        templateUrl: "tmpls/words/directives/variants.html",
         link: function (scope) {
           geolocationService.load().then(function (geolocation) {
             scope.geolocationList = geolocation;
@@ -233,14 +233,14 @@ angular
       return {
         //replace: true,
         restrict: "EA",
-        templateUrl: "tmpls/names/feedbacks.html",
+        templateUrl: "tmpls/words/feedbacks.html",
         link: function (scope, element, attributes) {
           api.getFeedback($stateParams.entry, function (resp) {
             scope.feedbacks = resp;
           });
           scope.showFeedbacks = function () {
             $modal.open({
-              templateUrl: "tmpls/names/partials/feedbackModal.html",
+              templateUrl: "tmpls/words/partials/feedbackModal.html",
               size: "md",
               controller: function ($scope, $modalInstance) {
                 $scope.modalTitle = "Feedbacks on " + attributes.word;

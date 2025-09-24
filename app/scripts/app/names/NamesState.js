@@ -3,13 +3,13 @@
 /* States */
 angular.module("NamesModule").config([
   "$stateProvider",
-  function($stateProvider) {
+  function ($stateProvider) {
     // State Configurations
     $stateProvider
-      // Names (parent state)
-      .state("auth.names", {
+      // Words (parent state)
+      .state("auth.words", {
         abstract: true,
-        url: "/names",
+        url: "/words",
         template:
           '<div ui-view autoscroll="false" class="mainView-animate"></div>',
         data: {
@@ -17,43 +17,43 @@ angular.module("NamesModule").config([
         }
       })
       // Words > New Entries
-      .state("auth.names.add_entries", {
+      .state("auth.words.add_entries", {
         page_title: "Yoruba Words - Admin - Add Word Entries",
         ncyBreadcrumb: { label: "Add Word Entries" },
         url: "/new",
-        templateUrl: "tmpls/names/new.html",
+        templateUrl: "tmpls/words/new.html",
         controller: "NamesAddEntriesCtrl"
       })
       // Edit Word Entry
-      .state("auth.names.edit_entries", {
+      .state("auth.words.edit_entries", {
         page_title: "Yoruba Words - Admin - Edit Entry",
         ncyBreadcrumb: { label: "Edit Entry" },
         url: "/edit/:entry",
-        templateUrl: "tmpls/names/edit.html",
+        templateUrl: "tmpls/words/edit.html",
         controller: "namesEditEntryCtrl"
       })
       // Words > Published Words
-      .state("auth.names.list_entries", {
+      .state("auth.words.list_entries", {
         page_title: "Yoruba Words - Admin - Words",
         ncyBreadcrumb: { label: "Words Entries" },
         url: "/lists/:status?:submmittedBy",
-        templateUrl: "tmpls/names/lists.html",
+        templateUrl: "tmpls/words/lists.html",
         controller: "namesListEntriesCtrl"
       })
       // Words > Word Search
-      .state("auth.names.search", {
+      .state("auth.words.search", {
         page_title: "Yoruba Words - Admin - Word Search",
         ncyBreadcrumb: { label: "Search" },
         url: "/search/:entry",
-        templateUrl: "tmpls/names/search.html",
+        templateUrl: "tmpls/words/search.html",
         controller: "nameSearchCtrl"
       })
       // All Words Feedback
-      .state("auth.names.feedbacks", {
+      .state("auth.words.feedbacks", {
         page_title: "Yoruba Words - Admin - Feedbacks",
         ncyBreadcrumb: { label: "Word Feedbacks" },
         url: "/feedbacks",
-        templateUrl: "tmpls/names/feedbacks-list.html",
+        templateUrl: "tmpls/words/feedbacks-list.html",
         controller: "namesFeedbacksCtrl"
       });
   }

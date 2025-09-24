@@ -22,31 +22,31 @@ angular.module('CommonModule').controller('SideMenuController', [
         submenu: [
           {
             title: 'Add Entries',
-            link: 'auth.names.add_entries'
+            link: 'auth.words.add_entries'
           },
           /*{
                             title: 'All Name Entries',
-                            link: "auth.names.list_entries({status:'all'})"
+                            link: "auth.words.list_entries({status:'all'})"
                         },*/
           {
             title: 'Published Words',
-            link: 'auth.names.list_entries({status:\'published\'})'
+            link: 'auth.words.list_entries({status:\'published\'})'
           },
           {
             title: 'Unpublished Words',
-            link: 'auth.names.list_entries({status:\'unpublished\'})'
+            link: 'auth.words.list_entries({status:\'unpublished\'})'
           },
           {
             title: 'Suggested Words',
-            link: 'auth.names.list_entries({status:\'suggested\'})'
+            link: 'auth.words.list_entries({status:\'suggested\'})'
           },
           {
             title: 'Feedbacks',
-            link: 'auth.names.feedbacks'
+            link: 'auth.words.feedbacks'
           },
           {
             title: 'Search',
-            link: 'auth.names.search'
+            link: 'auth.words.search'
           }
         ]
       }
