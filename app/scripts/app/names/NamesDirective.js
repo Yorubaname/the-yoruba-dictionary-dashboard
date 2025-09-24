@@ -201,7 +201,11 @@ angular
 
           scope.add_variant = function () {
             return scope.word.variants.push({
-              name: ""
+              word: "",
+              geolocation: {
+                place: "",
+                region: ""
+              }
             });
           };
 

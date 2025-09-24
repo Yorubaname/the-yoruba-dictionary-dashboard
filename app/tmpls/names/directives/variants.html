@@ -10,30 +10,17 @@
     <div class="col-sm-7">
       <div class="form-group form-float">
         <div class="form-line">
-          <input
-            placeholder="Word"
-            type="text"
-            id="word"
-            class="form-control"
-            ng-model="variant.word"
-            required
-            keyboard
-          />
+          <input placeholder="Word" type="text" id="word" class="form-control" ng-model="variant.word" required
+            keyboard />
         </div>
       </div>
     </div>
     <div class="col-sm-4">
       <div class="form-group form-float">
         <div class="form-line">
-          <select
-            ng-model="variant.geoLocation"
-            ng-options="geo.place for geo in geolocationList"
-            class="form-control"
-            required
-          >
-            <option value="" selected="selected" disabled="disabled"
-              >- GEO -</option
-            >
+          <select ng-model="variant.geolocation.place" ng-options="geo.place as geo.place for geo in geolocationList"
+            class="form-control" required>
+            <option value="" selected="selected" disabled="disabled">- GEO -</option>
           </select>
         </div>
       </div>
