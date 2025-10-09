@@ -236,17 +236,23 @@ angular.module("NamesModule").service("NamesService", [
     this.deleteFeedbacks = function (word, fn) {
       return api
         .deleteJson("/v1/words/feedback/?word=" + word)
-        .success(fn)
+        .success(function () {
+          toastr.success('All Feedbacks on ' + word + ' were deleted successfully!');
+          fn();
+        })
         .error(function () {
           return toastr.error(
             "Feedbacks on " + word + " were not deleted. Please try again."
           );
         });
     };
-    this.deleteFeedback = function (id, fn) {
+    this.deleteFeedback = function (id, word, fn) {
       return api
-        .deleteJson("/v1/words/feedback/" + id)
-        .success(fn)
+        .deleteJson("/v1/words/feedback/" + word + "/" + id)
+        .success(function () {
+          toastr.success(`Feedback on ${word} deleted successfully!`);
+          return fn();
+        })
         .error(function () {
           return toastr.error("Feedback was not deleted. Please try again.");
         });

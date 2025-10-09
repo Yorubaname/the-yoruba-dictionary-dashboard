@@ -258,16 +258,17 @@ angular
                 // delete all feedbacks and closes modal
                 $scope.deleteFeedbacks = function () {
                   api.deleteFeedbacks(attributes.word, function () {
+                    $scope.feedbacks.splice(0, $scope.feedbacks.length);
                     $modalInstance.close();
                   });
                 };
                 // delete one feedback by id and remove from list
                 $scope.deleteFeedback = function (feedback) {
-                  api.deleteFeedback(feedback.id, function () {
-                    $scope.feedbacks.splice(
-                      $scope.feedbacks.indexOf(feedback),
-                      1
-                    );
+                  api.deleteFeedback(feedback.id, feedback.word, function () {
+                    $scope.feedbacks.splice($scope.feedbacks.indexOf(feedback), 1);
+                    if (!$scope.feedbacks.length) {
+                      $modalInstance.close();
+                    }
                   });
                 };
                 $scope.cancel = function () {
