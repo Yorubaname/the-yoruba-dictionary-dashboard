@@ -56,26 +56,19 @@ angular
         link: function (scope) {
           if (!$stateParams.entry) {
             scope.word.etymology = [];
-            scope.word.etymology.push({
-              part: "",
-              meaning: ""
-            });
           }
 
+          // TODO Hafiz: Understand why this is not being used
           scope.add_etymology = function () {
             return scope.word.etymology.push({
               part: "",
-              meaning: ""
+              meaning: "",
+              isFresh: true
             });
           };
 
           scope.remove_etymology = function (index) {
             scope.word.etymology.splice(index, 1);
-            if (scope.word.etymology.length < 1)
-              return scope.word.etymology.push({
-                part: "",
-                meaning: ""
-              });
           };
           scope.$watch(
             "word.etymology",

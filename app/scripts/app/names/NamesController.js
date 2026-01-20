@@ -1,3 +1,5 @@
+/* globals confirm */
+
 "use strict";
 
 /* Controllers */
@@ -62,13 +64,8 @@ angular
       namesService.getName($stateParams.entry, false, function (resp) {
         $scope.word = resp;
         originalName = resp.word;
-        // hack for words without etymology
-        if (!resp.etymology.length) {
-          $scope.word.etymology.push({
-            part: "",
-            meaning: ""
-          });
-        }
+        
+        // A word must have at least one definition
         if (!resp.definitions.length) {
           $scope.word.definitions.push({
             content: "",
@@ -78,34 +75,69 @@ angular
         }
       });
 
-      $scope.generate_glossary = function () {
-        // split the morphology with the dashes if it's not empty
-        if ($scope.word.morphology) {
-          var etymology = $scope.word.etymology;
-          var splitMorphology = $scope.word.morphology.split("-");
-          // add each entry to etymology list if it does not exist already
-          for (var i = 0; i < splitMorphology.length; i++) {
-            var newPart = splitMorphology[i];
-            var oldPart = etymology[i];
-            if (!oldPart) {
-              etymology.push({
-                part: newPart,
-                meaning: ""
-              });
+      const mapExistingPartMeanings = (etymology) => {
+        return etymology.reduce((map, item) => {
+          map[item.part.toLowerCase().normalize('NFC')] = item.meaning;
+          return map;
+        }, {});
+      };
+
+      const updateEtymology = (etymologyParts, partMeaningDict, etymology) => {
+        const alreadyAdded = {};
+        let etymologyCounter = 0;
+
+        etymologyParts.forEach(part => {
+          if (!alreadyAdded[part]) {
+            const newEty = {
+              part: part,
+              meaning: partMeaningDict[part] || ''
+            };
+
+            if (etymology[etymologyCounter]) {
+              etymology[etymologyCounter] = newEty;
             } else {
-              oldPart.part = newPart;
+              etymology.push(newEty);
             }
+
+            etymologyCounter++;
+            alreadyAdded[part] = true;
           }
-          $scope.word.etymology = etymology.slice(0, splitMorphology.length);
+        });
+
+        return etymology.slice(0, etymologyCounter);
+      };
+
+      $scope.generate_glossary = function () {
+        var regenerate = confirm("Do you want to automatically generate gloss from this morphology value?" +
+          "\nSelect Cancel/No to leave as is.");
+
+        if (!regenerate) {
+          return;
         }
+
+        if (!$scope.word.morphology) {
+          $scope.word.etymology = [];
+          return;
+        }
+
+        $scope.word.morphology = $scope.word.morphology.toLowerCase().normalize('NFC');
+
+        let etymology = $scope.word.etymology;
+        const partMeaningDict = mapExistingPartMeanings(etymology);
+        const etymologyParts = $scope.word.morphology
+          .split(',')
+          .flatMap(value => value.trim().split('-'))
+          .filter(Boolean);
+
+        $scope.word.etymology = updateEtymology(etymologyParts, partMeaningDict, etymology);
+
+        toastr.warning("Please, re-check gloss before saving/publishing as some parts might have been removed/changed.");
       };
 
       $scope.publish = function () {
         // update name first, then publish
         return namesService.updateName(originalName, $scope.word, function () {
-          // first remove name from index
-          namesService.removeNameFromIndex($scope.word.word);
-          // then add name back to index
+          // Publish the name
           return namesService
             .addNameToIndex($scope.word.word)
             .success(function () {

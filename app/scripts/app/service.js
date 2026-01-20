@@ -9,7 +9,7 @@ angular.module('ui.load', []).service('uiLoad', [
     var promise = false;
     var deferred = $q.defer();
     this.load = function (srcs) {
-      srcs = angular.isArray(srcs) ? srcs : srcs.split(/\s+/);
+      srcs = Array.isArray(srcs) ? srcs : srcs.split(/\s+/);
       var self = this;
       if (!promise) {
         promise = deferred.promise;
