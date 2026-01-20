@@ -58,7 +58,6 @@ angular
             scope.word.etymology = [];
           }
 
-          // TODO Hafiz: Understand why this is not being used
           scope.add_etymology = function () {
             return scope.word.etymology.push({
               part: "",
