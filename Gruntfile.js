@@ -408,7 +408,7 @@ module.exports = function (grunt) {
         constants: {
           ENV: {
             name: "staging",
-            baseUrl: "https://staging.yorubaword.com"
+            baseUrl: "https://staging.yorubaword.com/api"
           }
         }
       },
@@ -419,7 +419,7 @@ module.exports = function (grunt) {
         constants: {
           ENV: {
             name: "production",
-            baseUrl: "https://www.yorubaword.com"
+            baseUrl: "https://www.yorubaword.com/api"
           }
         }
       }
