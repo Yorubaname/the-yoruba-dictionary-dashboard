@@ -408,7 +408,7 @@ module.exports = function (grunt) {
         constants: {
           ENV: {
             name: "staging",
-            baseUrl: "https://yoruba-dictionary.herokuapp.com"
+            baseUrl: "https://staging.yorubaword.com"
           }
         }
       },
