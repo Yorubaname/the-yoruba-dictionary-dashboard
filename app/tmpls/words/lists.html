@@ -1,19 +1,23 @@
 <div class="row">
 
     <div class="col-sm-8">
-        <a class="btn btn-sm btn-info" ui-sref="auth.names.add_entries">Add Word Entry</a>
+        <a class="btn btn-sm btn-info" ui-sref="auth.words.add_entries">Add Word Entry</a>
         <div class="btn-group btn-sm">
-            <!--a ui-sref="auth.names.list_entries({status:'all'})" class="btn btn-sm btn-default" ng-class="status == 'all' ? 'btn-primary' : ''">All Words</a-->
-            <a ui-sref="auth.names.list_entries({status:'published'})" class="btn btn-sm btn-default" ng-class="status == 'published' ? 'btn-primary' : ''">Published Words</a>
-            <a ui-sref="auth.names.list_entries({status:'modified'})" class="btn btn-sm btn-default" ng-class="status == 'modified' ? 'btn-primary' : ''"
-                ng-show="isAdmin">Modified Words</a>
-            <a ui-sref="auth.names.list_entries({status:'unpublished'})" class="btn btn-sm btn-default" ng-class="status == 'unpublished' ? 'btn-primary' : ''">Unpublished Words</a>
-            <a ui-sref="auth.names.list_entries({status:'suggested'})" class="btn btn-sm btn-default" ng-class="status == 'suggested' ? 'btn-primary' : ''">Suggested Words</a>
+            <!--a ui-sref="auth.words.list_entries({status:'all'})" class="btn btn-sm btn-default" ng-class="status == 'all' ? 'btn-primary' : ''">All Words</a-->
+            <a ui-sref="auth.words.list_entries({status:'published'})" class="btn btn-sm btn-default"
+                ng-class="status == 'published' ? 'btn-primary' : ''">Published Words</a>
+            <a ui-sref="auth.words.list_entries({status:'modified'})" class="btn btn-sm btn-default"
+                ng-class="status == 'modified' ? 'btn-primary' : ''" ng-show="isAdmin">Modified Words</a>
+            <a ui-sref="auth.words.list_entries({status:'unpublished'})" class="btn btn-sm btn-default"
+                ng-class="status == 'unpublished' ? 'btn-primary' : ''">Unpublished Words</a>
+            <a ui-sref="auth.words.list_entries({status:'suggested'})" class="btn btn-sm btn-default"
+                ng-class="status == 'suggested' ? 'btn-primary' : ''">Suggested Words</a>
         </div>
     </div>
 
     <div class="col-sm-3">
-        <input ng-model="search" type="text" class="form-control input-sm" placeholder="Type a word here to quickly filter the list">
+        <input ng-model="search" type="text" class="form-control input-sm"
+            placeholder="Type a word here to quickly filter the list">
         <span class="help-block">Filter</span>
     </div>
 
@@ -29,7 +33,7 @@
         <div class="well well-sm text-center" ng-show="!wordsList.length">
             <h3 class="text-muted">Not an entry here, yet!</h3>
             <p class="lead">How about you start by adding a word?</p>
-            <a class="btn btn-md btn-info" ui-sref="auth.names.add_entries">Add Word Entry</a>
+            <a class="btn btn-md btn-info" ui-sref="auth.words.add_entries">Add Word Entry</a>
         </div>
         <table class="table table-yuk2" id="words_table" ng-show="wordsList.length">
             <thead>
@@ -39,7 +43,8 @@
                     </th>
                     <th>Word
                         <span ng-click="sort('word')" class="badge badge-default pull-right">
-                            <i class="glyphicon sort-icon" ng-class="{'glyphicon-chevron-up':reverse,'glyphicon-chevron-down':!reverse}"></i>
+                            <i class="glyphicon sort-icon"
+                                ng-class="{'glyphicon-chevron-up':reverse,'glyphicon-chevron-down':!reverse}"></i>
                         </span>
                     </th>
                     <th>Syllables</th>
@@ -51,13 +56,14 @@
                 </tr>
             </thead>
             <tbody>
-                <tr dir-paginate="entry in wordsList|orderBy:sortKey:reverse|filter:search|itemsPerPage:count" total-items="wordsListItems"
-                    current-page="pagination.current" ng-class="entry.isSelected ? 'bg-info' : '' ">
+                <tr dir-paginate="entry in wordsList|orderBy:sortKey:reverse|filter:search|itemsPerPage:count"
+                    total-items="wordsListItems" current-page="pagination.current"
+                    ng-class="entry.isSelected ? 'bg-info' : '' ">
                     <td ng-hide="isBasic">
                         <input type="checkbox" ng-model="entry.isSelected">
                     </td>
                     <td>
-                        <a ui-sref="auth.names.edit_entries({entry:entry.word})">
+                        <a ui-sref="auth.words.edit_entries({entry:entry.word})">
                             <strong>{{entry.word}}</strong>
                         </a>
                     </td>
@@ -65,7 +71,8 @@
                     <td>{{entry.geoLocation|list}}</td>
                     <td>{{entry.state}}</td>
                     <td ng-show="(isAdmin || isLexicographer)">
-                        <a ng-show="entry.state != 'SUGGESTED'" class="btn btn-xs" ng-class="entry.state == 'PUBLISHED' ? 'btn-warning' : 'btn-success'"
+                        <a ng-show="entry.state != 'SUGGESTED'" class="btn btn-xs"
+                            ng-class="entry.state == 'PUBLISHED' ? 'btn-warning' : 'btn-success'"
                             ng-click="indexName(entry)">
                             {{entry.state == 'PUBLISHED' ? 'Unpublish' : 'Publish'}}
                         </a>
@@ -77,22 +84,29 @@
             <tfoot>
                 <tr ng-hide="!wordsList.length || isBasic">
                     <td colspan="2">
-                        <select-all-checkbox checkboxes="wordsList"></select-all-checkbox> Select all words</td>
+                        <select-all-checkbox checkboxes="wordsList"></select-all-checkbox> Select all words
+                    </td>
                     <td colspan="6">Show
-                        <select ng-model="count" ng-options="n for n in [ 10, 20, 50, 100, 250, 500 ]" ng-change="fetch(1, count)"></select>                        words</td>
+                        <select ng-model="count" ng-options="n for n in [ 10, 20, 50, 100, 250, 500 ]"
+                            ng-change="fetch(1, count)"></select> words
+                    </td>
                 </tr>
                 <tr>
                     <td colspan="8" class="text-center">
-                        <dir-pagination-controls max-size="12" direction-links="true" boundary-links="true" on-page-change="fetch(newPageNumber, count)">
+                        <dir-pagination-controls max-size="12" direction-links="true" boundary-links="true"
+                            on-page-change="fetch(newPageNumber, count)">
                         </dir-pagination-controls>
                     </td>
                 </tr>
             </tfoot>
         </table>
 
-        <a ng-show="wordsList.length && status != 'published' && isAdmin || isLexicographer" ng-click="indexNames('add')" class="btn btn-success btn-sm">Publish Selected</a>
-        <a ng-show="wordsList.length && status != 'unpublished' && isAdmin || isLexicographer" ng-click="indexNames('remove')" class="btn btn-warning btn-sm">Unpublish Selected</a>
-        <a ng-click="delete()" ng-hide="!wordsList.length || !isAdmin" class="btn btn-default btn-sm pull-right">Delete Selected</a>
+        <a ng-show="wordsList.length && status != 'published' && isAdmin || isLexicographer"
+            ng-click="indexNames('add')" class="btn btn-success btn-sm">Publish Selected</a>
+        <a ng-show="wordsList.length && status != 'unpublished' && isAdmin || isLexicographer"
+            ng-click="indexNames('remove')" class="btn btn-warning btn-sm">Unpublish Selected</a>
+        <a ng-click="delete()" ng-hide="!wordsList.length || !isAdmin" class="btn btn-default btn-sm pull-right">Delete
+            Selected</a>
     </div>
 
     <div class="col-md-12" ng-if="status == 'suggested'">
@@ -109,7 +123,8 @@
                     </th>
                     <th>Word
                         <span ng-click="sort('word')" class="badge badge-default pull-right">
-                            <i class="glyphicon sort-icon" ng-class="{'glyphicon-chevron-up':reverse,'glyphicon-chevron-down':!reverse}"></i>
+                            <i class="glyphicon sort-icon"
+                                ng-class="{'glyphicon-chevron-up':reverse,'glyphicon-chevron-down':!reverse}"></i>
                         </span>
                     </th>
                     <th>Details</th>
@@ -119,8 +134,9 @@
                 </tr>
             </thead>
             <tbody>
-                <tr dir-paginate="entry in wordsList|orderBy:sortKey:reverse|filter:search|itemsPerPage:count" total-items="wordsListItems"
-                    current-page="pagination.current" on-last-repeat ng-class="entry.isSelected ? 'bg-info' : '' ">
+                <tr dir-paginate="entry in wordsList|orderBy:sortKey:reverse|filter:search|itemsPerPage:count"
+                    total-items="wordsListItems" current-page="pagination.current" on-last-repeat
+                    ng-class="entry.isSelected ? 'bg-info' : '' ">
                     <td>
                         <input type="checkbox" ng-model="entry.isSelected">
                     </td>
@@ -139,13 +155,17 @@
             <tfoot>
                 <tr ng-hide="!wordsList.length">
                     <td colspan="2">
-                        <select-all-checkbox checkboxes="wordsList"></select-all-checkbox> Select all suggested words</td>
+                        <select-all-checkbox checkboxes="wordsList"></select-all-checkbox> Select all suggested words
+                    </td>
                     <td colspan="4">Show
-                        <select ng-model="count" ng-options="n for n in [ 10, 20, 50, 100, 250, 500 ]" ng-change="fetch(1, count)"></select>                        words</td>
+                        <select ng-model="count" ng-options="n for n in [ 10, 20, 50, 100, 250, 500 ]"
+                            ng-change="fetch(1, count)"></select> words
+                    </td>
                 </tr>
                 <tr>
                     <td colspan="6">
-                        <dir-pagination-controls max-size="12" direction-links="true" boundary-links="true" on-page-change="fetch(newPageNumber)">
+                        <dir-pagination-controls max-size="12" direction-links="true" boundary-links="true"
+                            on-page-change="fetch(newPageNumber)">
                         </dir-pagination-controls>
                     </td>
                 </tr>
@@ -153,6 +173,7 @@
         </table>
 
         <a ng-click="accept()" ng-hide="!wordsList.length" class="btn btn-success btn-sm">Accept Selected</a>
-        <a ng-click="delete()" ng-hide="!wordsList.length || !isAdmin" class="btn btn-default btn-sm pull-right">Delete Selected</a>
+        <a ng-click="delete()" ng-hide="!wordsList.length || !isAdmin" class="btn btn-default btn-sm pull-right">Delete
+            Selected</a>
     </div>
 </div>

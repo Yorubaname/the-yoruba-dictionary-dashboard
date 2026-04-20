@@ -78,7 +78,7 @@ module.exports = function (grunt) {
       options: {
         port: 9000,
         // Change this to '0.0.0.0' to access the server from outside.
-        hostname: "localhost",
+        hostname: "127.0.0.1",
         livereload: 35729
       },
       livereload: {
@@ -396,7 +396,7 @@ module.exports = function (grunt) {
         constants: {
           ENV: {
             name: "development",
-            baseUrl: "http://localhost:8081"
+            baseUrl: 'http://local.yorubaword.com:9001/api'
           }
         }
       },
@@ -408,7 +408,7 @@ module.exports = function (grunt) {
         constants: {
           ENV: {
             name: "staging",
-            baseUrl: "https://yoruba-dictionary.herokuapp.com"
+            baseUrl: "https://staging.yorubaword.com/api"
           }
         }
       },
@@ -419,7 +419,7 @@ module.exports = function (grunt) {
         constants: {
           ENV: {
             name: "production",
-            baseUrl: "https://www.yorubaword.com"
+            baseUrl: "https://www.yorubaword.com/api"
           }
         }
       }
@@ -437,7 +437,7 @@ module.exports = function (grunt) {
       grunt.task.run([
         "jshint:check",
         "clean:server",
-        "ngconstant:staging",
+        "ngconstant:development",
         //'wiredep',
         "concurrent:server",
         "autoprefixer:server",

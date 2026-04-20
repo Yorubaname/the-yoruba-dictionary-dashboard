@@ -18,21 +18,21 @@ angular.module('UsersModule').config([
       })
 
       .state('auth.users.add_user', {
-        page_title: 'Yoruba Names Admin - Add User',
+        page_title: 'Yoruba Words Admin - Add User',
         ncyBreadcrumb: {label: 'Add User'},
         url: '/new',
         templateUrl: 'tmpls/users/new.html'
       })
 
       .state('auth.users.edit_user', {
-        page_title: 'Yoruba Names Admin - Edit User',
+        page_title: 'Yoruba Words Admin - Edit User',
         ncyBreadcrumb: {label: 'Edit User Info'},
         url: '/edit/:id',
         templateUrl: 'tmpls/users/edit.html'
       })
 
       .state('auth.users.list_users', {
-        page_title: 'Yoruba Names Admin - All Users',
+        page_title: 'Yoruba Words Admin - All Users',
         ncyBreadcrumb: {label: 'All Users'},
         url: '/lists/:role',
         templateUrl: 'tmpls/users/lists.html',

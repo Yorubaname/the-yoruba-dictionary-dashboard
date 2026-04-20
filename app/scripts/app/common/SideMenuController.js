@@ -16,37 +16,33 @@ angular.module('CommonModule').controller('SideMenuController', [
       },
       {
         id: 1,
-        title: 'Names Entries',
+        title: 'Word Entries',
         icon: 'fa fa-list-ol first_level_icon',
-        submenu_title: 'Names Entries',
+        submenu_title: 'Word Entries',
         submenu: [
           {
             title: 'Add Entries',
-            link: 'auth.names.add_entries'
+            link: 'auth.words.add_entries'
           },
           /*{
                             title: 'All Name Entries',
-                            link: "auth.names.list_entries({status:'all'})"
+                            link: "auth.words.list_entries({status:'all'})"
                         },*/
           {
-            title: 'Published Names',
-            link: 'auth.names.list_entries({status:\'published\'})'
+            title: 'Published Words',
+            link: 'auth.words.list_entries({status:\'published\'})'
           },
           {
-            title: 'Unpublished Names',
-            link: 'auth.names.list_entries({status:\'unpublished\'})'
+            title: 'Unpublished Words',
+            link: 'auth.words.list_entries({status:\'unpublished\'})'
           },
           {
-            title: 'Suggested Names',
-            link: 'auth.names.list_entries({status:\'suggested\'})'
+            title: 'Suggested Words',
+            link: 'auth.words.list_entries({status:\'suggested\'})'
           },
           {
             title: 'Feedbacks',
-            link: 'auth.names.feedbacks'
-          },
-          {
-            title: 'Search',
-            link: 'auth.names.search'
+            link: 'auth.words.feedbacks'
           }
         ]
       }

@@ -5,11 +5,25 @@ angular
   .module("NamesModule") // Directive adds the geolocation autocompletes on the tagsInput field of Name Form
   .directive("nameForm", [
     "geolocationService",
-    function(geo) {
+    function (geo) {
       return {
-        link: function(scope) {
-          scope.query = function() {
-            return geo.load();
+        link: function (scope) {
+          geo.load().then(function (data) {
+            scope.geolocations = data;
+          });
+
+          scope.query = function (query) {
+            if (!scope.geolocations) return [];
+
+            if (!query || query.trim() === '') {
+              // If the query is empty or null, return the full list
+              return scope.geolocations;
+            }
+
+            // Otherwise, filter the list based on the query
+            return scope.geolocations.filter(function (location) {
+              return location.place.toLowerCase().indexOf(query.toLowerCase()) !== -1;
+            });
           };
         }
       };
@@ -17,9 +31,9 @@ angular
   ]) // Directive adds File Uploader widget on the New Name Form for uploading names in bulk
   .directive("namesUpload", [
     "uploadService",
-    function(Uploader) {
+    function (Uploader) {
       return {
-        controller: function($scope) {
+        controller: function ($scope) {
           $scope.uploader = Uploader({
             url: "/v1/names/upload",
             alias: "nameFiles",
@@ -34,38 +48,30 @@ angular
   ]) // Directive adds array of Etymology fields to the Name Form
   .directive("etymology", [
     "$stateParams",
-    function($stateParams) {
+    function ($stateParams) {
       return {
         replace: true,
         restrict: "E",
-        templateUrl: "tmpls/names/directives/etymology.html",
-        link: function(scope) {
+        templateUrl: "tmpls/words/directives/etymology.html",
+        link: function (scope) {
           if (!$stateParams.entry) {
             scope.word.etymology = [];
-            scope.word.etymology.push({
-              part: "",
-              meaning: ""
-            });
           }
 
-          scope.add_etymology = function() {
+          scope.add_etymology = function () {
             return scope.word.etymology.push({
               part: "",
-              meaning: ""
+              meaning: "",
+              isFresh: true
             });
           };
 
-          scope.remove_etymology = function(index) {
+          scope.remove_etymology = function (index) {
             scope.word.etymology.splice(index, 1);
-            if (scope.word.etymology.length < 1)
-              return scope.word.etymology.push({
-                part: "",
-                meaning: ""
-              });
           };
           scope.$watch(
             "word.etymology",
-            function() {
+            function () {
               scope.form.$dirty = true;
             },
             true
@@ -76,12 +82,12 @@ angular
   ]) // Directive adds array of definition fields to the word Form
   .directive("definition", [
     "$stateParams",
-    function($stateParams) {
+    function ($stateParams) {
       return {
         replace: true,
         restrict: "E",
-        templateUrl: "tmpls/names/directives/definition.html",
-        link: function(scope) {
+        templateUrl: "tmpls/words/directives/definition.html",
+        link: function (scope) {
           if (!$stateParams.entry) {
             scope.word.definitions = [
               {
@@ -92,7 +98,7 @@ angular
             ];
           }
 
-          scope.add_definition = function() {
+          scope.add_definition = function () {
             return scope.word.definitions.push({
               content: "",
               englishTranslation: "",
@@ -100,7 +106,7 @@ angular
             });
           };
 
-          scope.remove_definition = function(index) {
+          scope.remove_definition = function (index) {
             scope.word.definitions.splice(index, 1);
             if (scope.word.definitions.length < 1)
               return scope.word.definitions.push({
@@ -110,7 +116,7 @@ angular
               });
           };
 
-          scope.add_example = function(definition) {
+          scope.add_example = function (definition) {
             return definition.examples.push({
               content: "",
               englishTranslation: "",
@@ -118,13 +124,13 @@ angular
             });
           };
 
-          scope.remove_example = function(definition, index) {
+          scope.remove_example = function (definition, index) {
             return definition.examples.splice(index, 1);
           };
 
           scope.$watch(
             "word.definitions",
-            function() {
+            function () {
               scope.form.$dirty = true;
             },
             true
@@ -135,17 +141,17 @@ angular
   ])
   .directive("multimedia", [
     "$stateParams",
-    function($stateParams) {
+    function ($stateParams) {
       return {
         replace: true,
         restrict: "E",
-        templateUrl: "tmpls/names/directives/multimedia.html",
-        link: function(scope) {
+        templateUrl: "tmpls/words/directives/multimedia.html",
+        link: function (scope) {
           if (!$stateParams.entry) {
             scope.word.mediaLinks = [];
           }
 
-          scope.add_media = function() {
+          scope.add_media = function () {
             return scope.word.mediaLinks.push({
               link: "",
               caption: "",
@@ -153,13 +159,13 @@ angular
             });
           };
 
-          scope.remove_media = function(index) {
+          scope.remove_media = function (index) {
             scope.word.mediaLinks.splice(index, 1);
           };
 
           scope.$watch(
             "word.mediaLinks",
-            function() {
+            function () {
               scope.form.$dirty = true;
             },
             true
@@ -171,33 +177,46 @@ angular
   .directive("variants", [
     "$stateParams",
     "geolocationService",
-    function($stateParams, geolocationService) {
+    function ($stateParams, geolocationService) {
       return {
         replace: true,
         restrict: "E",
-        templateUrl: "tmpls/names/directives/variants.html",
-        link: function(scope) {
-          geolocationService.load().then(function(geolocation) {
-            scope.geolocationList = geolocation.data;
+        templateUrl: "tmpls/words/directives/variants.html",
+        link: function (scope) {
+          geolocationService.load().then(function (geolocation) {
+            scope.geolocationList = geolocation;
           });
 
           if (!$stateParams.entry) {
             scope.word.variants = [];
           }
 
-          scope.add_variant = function() {
+          scope.updateGeolocation = function (variant) {
+            var selectedGeo = scope.geolocationList.find(function (geo) {
+              return geo.place === variant.geolocation.place;
+            });
+            if (selectedGeo) {
+              variant.geolocation.region = selectedGeo.region;
+            }
+          };
+
+          scope.add_variant = function () {
             return scope.word.variants.push({
-              name: ""
+              word: "",
+              geolocation: {
+                place: "",
+                region: ""
+              }
             });
           };
 
-          scope.remove_variant = function(index) {
+          scope.remove_variant = function (index) {
             scope.word.variants.splice(index, 1);
           };
 
           scope.$watch(
             "word.variants",
-            function() {
+            function () {
               scope.form.$dirty = true;
             },
             true
@@ -211,39 +230,40 @@ angular
     "$modal",
     "$stateParams",
     "$rootScope",
-    function(api, $modal, $stateParams, $rootScope) {
+    function (api, $modal, $stateParams, $rootScope) {
       return {
         //replace: true,
         restrict: "EA",
-        templateUrl: "tmpls/names/feedbacks.html",
-        link: function(scope, element, attributes) {
-          api.getFeedback($stateParams.entry, function(resp) {
+        templateUrl: "tmpls/words/feedbacks.html",
+        link: function (scope, element, attributes) {
+          api.getFeedback($stateParams.entry, function (resp) {
             scope.feedbacks = resp;
           });
-          scope.showFeedbacks = function() {
+          scope.showFeedbacks = function () {
             $modal.open({
-              templateUrl: "tmpls/names/partials/feedbackModal.html",
+              templateUrl: "tmpls/words/partials/feedbackModal.html",
               size: "md",
-              controller: function($scope, $modalInstance) {
+              controller: function ($scope, $modalInstance) {
                 $scope.modalTitle = "Feedbacks on " + attributes.word;
                 $scope.feedbacks = scope.feedbacks;
                 $scope.isAdmin = $rootScope.isAdmin;
                 // delete all feedbacks and closes modal
-                $scope.deleteFeedbacks = function() {
-                  api.deleteFeedbacks(attributes.word, function() {
+                $scope.deleteFeedbacks = function () {
+                  api.deleteFeedbacks(attributes.word, function () {
+                    $scope.feedbacks.splice(0, $scope.feedbacks.length);
                     $modalInstance.close();
                   });
                 };
                 // delete one feedback by id and remove from list
-                $scope.deleteFeedback = function(feedback) {
-                  api.deleteFeedback(feedback.id, function() {
-                    $scope.feedbacks.splice(
-                      $scope.feedbacks.indexOf(feedback),
-                      1
-                    );
+                $scope.deleteFeedback = function (feedback) {
+                  api.deleteFeedback(feedback.id, feedback.word, function () {
+                    $scope.feedbacks.splice($scope.feedbacks.indexOf(feedback), 1);
+                    if (!$scope.feedbacks.length) {
+                      $modalInstance.close();
+                    }
                   });
                 };
-                $scope.cancel = function() {
+                $scope.cancel = function () {
                   $modalInstance.dismiss("cancel");
                 };
               }

@@ -8,18 +8,18 @@
         <p class="user_profile_info"> <a ng-href="mailto:{{logged_in_user.email}}">{{logged_in_user.email}}</a></p>
     </div>
     <div class="col-sm-6 text-right-sm">
-        <a class="btn btn-lg btn-success" ui-sref="auth.names.add_entries">Add Word Entry</a>
+        <a class="btn btn-lg btn-success" ui-sref="auth.words.add_entries">Add Word Entry</a>
     </div>
 
     <div class="col-sm-12">
-       <h5>Site Statistics</h5>
+        <h5>Site Statistics</h5>
     </div>
-     <div class="col-sm-3 col-xs-4">
+    <div class="col-sm-3 col-xs-4">
         <div class="info_box_var_1 box_bg_b">
             <div class="info_box_body">
                 <span class="countUpMe all_names" data-endVal="count_all_names">{{count_all_names || '0'}}</span>
             </div>
-            <a class="info_box_footer" ui-sref="auth.names.list_entries({status:'all'})">
+            <a class="info_box_footer" ui-sref="auth.words.list_entries({status:'all'})">
                 <strong>Word Entries</strong>
             </a>
         </div>
@@ -27,9 +27,10 @@
     <div class="col-sm-3 col-xs-4">
         <div class="info_box_var_1 box_bg_a">
             <div class="info_box_body">
-                <span class="countUpMe published_names" data-endVal="count_published_names">{{count_published_names || '0'}}</span>
+                <span class="countUpMe published_names" data-endVal="count_published_names">{{count_published_names ||
+                    '0'}}</span>
             </div>
-            <a class="info_box_footer" ui-sref="auth.names.list_entries({status:'published'})">
+            <a class="info_box_footer" ui-sref="auth.words.list_entries({status:'published'})">
                 <strong>Published Entries</strong>
             </a>
         </div>
@@ -37,9 +38,10 @@
     <div class="col-sm-3 col-xs-4">
         <div class="info_box_var_1 box_bg_d">
             <div class="info_box_body">
-                <span class="countUpMe suggested_names" data-endVal="count_suggested_names">{{count_suggested_names || '0'}}</span>
+                <span class="countUpMe suggested_names" data-endVal="count_suggested_names">{{count_suggested_names ||
+                    '0'}}</span>
             </div>
-            <a class="info_box_footer" ui-sref="auth.names.list_entries({status:'suggested'})">
+            <a class="info_box_footer" ui-sref="auth.words.list_entries({status:'suggested'})">
                 <strong>Suggested Words</strong>
             </a>
         </div>
@@ -47,9 +49,10 @@
     <div class="col-sm-3 col-xs-4">
         <div class="info_box_var_1 box_bg_c">
             <div class="info_box_body">
-                <span class="countUpMe unpublished_names" data-endVal="count_unpublished_names">{{count_unpublished_names || '0'}}</span>
+                <span class="countUpMe unpublished_names"
+                    data-endVal="count_unpublished_names">{{count_unpublished_names || '0'}}</span>
             </div>
-            <a class="info_box_footer" ui-sref="auth.names.list_entries({status:'unpublished'})">
+            <a class="info_box_footer" ui-sref="auth.words.list_entries({status:'unpublished'})">
                 Unpublished Words
             </a>
         </div>
@@ -60,9 +63,12 @@
         <div class="heading_a"><span class="heading_text">Find Entry</span></div>
         <form ng-submit="exec_search()">
             <div class="input-group sepH_b">
-                <input class="form-control input-lg" placeholder="Enter word" id="appendedInputButton" type="text" ng-model="search.entry" typeahead="entry.word for entry in names | filter:$viewValue | limitTo:8" keyboard>
+                <input class="form-control input-lg" placeholder="Enter word" id="appendedInputButton" type="text"
+                    ng-model="search.entry" typeahead="entry.word for entry in names | filter:$viewValue | limitTo:8"
+                    keyboard>
                 <span class="input-group-btn">
-                    <button class="btn btn-success btn-lg" ng-disabled="!search.entry" ng-click="exec_search()" type="button"><i class="fa fa-search"></i> Search</button>
+                    <button class="btn btn-success btn-lg" ng-disabled="!search.entry" ng-click="exec_search()"
+                        type="button"><i class="fa fa-search"></i> Search</button>
                 </span>
             </div>
             <!--div class="checkbox">
@@ -74,65 +80,78 @@
         </form>
 
     </div>
-    
+
 </div>
 <div class="row">
     <div class="col-sm-4">
         <div class="heading_a"><span class="heading_text">Recently Added Entries</span></div>
-        
+
         <table class="table table-yuk">
             <tbody>
                 <tr ng-repeat="entry in latestNames">
-                    <td><a ui-sref="auth.names.edit_entries({entry:entry.word})">{{entry.word}}</a></td>
+                    <td><a ui-sref="auth.words.edit_entries({entry:entry.word})">{{entry.word}}</a></td>
                 </tr>
             </tbody>
             <tfoot ng-show="latestNames.length">
-                <tr class="text-right"><td colspan="2"><a ui-sref="auth.names.list_entries({status:'unpublished'})">See all recently added words</a></td></tr>
+                <tr class="text-right">
+                    <td colspan="2"><a ui-sref="auth.words.list_entries({status:'unpublished'})">See all recently added
+                            words</a></td>
+                </tr>
             </tfoot>
             <tfoot ng-hide="latestNames.length">
-                <tr class="warning"><td colspan="2">There are no recently added words</td></tr>
+                <tr class="warning">
+                    <td colspan="2">There are no recently added words</td>
+                </tr>
             </tfoot>
         </table>
-            
+
     </div>
 
     <div class="col-sm-3">
         <div class="heading_a"><span class="heading_text">Recently Published Words</span></div>
-        
+
         <table class="table table-yuk">
             <tbody>
                 <tr ng-repeat="entry in publishedNames">
-                    <td><a ui-sref="auth.names.edit_entries({entry:entry})">{{entry}}</a></td>
+                    <td><a ui-sref="auth.words.edit_entries({entry:entry})">{{entry}}</a></td>
                 </tr>
             </tbody>
             <tfoot ng-show="publishedNames.length">
-                <tr class="text-right"><td><a ui-sref="auth.names.list_entries({status:'published'})">See all published words</a></td></tr>
+                <tr class="text-right">
+                    <td><a ui-sref="auth.words.list_entries({status:'published'})">See all published words</a></td>
+                </tr>
             </tfoot>
             <tfoot ng-hide="publishedNames.length">
-                <tr class="warning"><td>There are no Published words</td></tr>
+                <tr class="warning">
+                    <td>There are no Published words</td>
+                </tr>
             </tfoot>
         </table>
-            
+
     </div>
 
     <div class="col-sm-5">
         <div class="heading_a"><span class="heading_text">Recent Feedback on Words</span></div>
-        
+
         <table class="table table-yuk">
             <tbody>
                 <tr ng-repeat="entry in feedbacks">
-                    <td><a ui-sref="auth.names.edit_entries({entry:entry.word})">{{entry.word}}</a></td>
+                    <td><a ui-sref="auth.words.edit_entries({entry:entry.word})">{{entry.word}}</a></td>
                     <td>{{entry.feedback}}</td>
                     <td>{{entry.submittedAt|toDateString}}</td>
                 </tr>
             </tbody>
             <tfoot ng-show="feedbacks.length">
-                <tr class="text-right"><td colspan="3"><a ui-sref="auth.names.feedbacks">See all feedbacks</a></td></tr>
+                <tr class="text-right">
+                    <td colspan="3"><a ui-sref="auth.words.feedbacks">See all feedbacks</a></td>
+                </tr>
             </tfoot>
             <tfoot ng-hide="feedbacks.length">
-                <tr class="warning"><td colspan="3">There is no feedback on any word</td></tr>
+                <tr class="warning">
+                    <td colspan="3">There is no feedback on any word</td>
+                </tr>
             </tfoot>
         </table>
-            
+
     </div>
 </div>

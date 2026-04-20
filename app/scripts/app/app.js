@@ -155,7 +155,7 @@ angular.module('dashboardappApp', [
       if (filterOn === false) {
         return items;
       }
-      if ((filterOn || angular.isUndefined(filterOn)) && angular.isArray(items)) {
+      if ((filterOn || angular.isUndefined(filterOn)) && Array.isArray(items)) {
         var newItems = [], get = angular.isString(filterOn) ? $parse(filterOn) : function (item) {
             return item;
           };

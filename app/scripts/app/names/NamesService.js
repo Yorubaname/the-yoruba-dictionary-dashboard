@@ -8,15 +8,15 @@ angular.module("NamesModule").service("NamesService", [
   "$localStorage",
   "$timeout",
   "_",
-  function(api, toastr, $state, $localStorage, $timeout, _) {
-    var cacheNames = function() {
-      return api.get("/v1/words?all=true").success(function(resp) {
+  function (api, toastr, $state, $localStorage, $timeout, _) {
+    var cacheNames = function () {
+      return api.get("/v1/words?all=true").success(function (resp) {
         $localStorage.entries = resp;
       });
     };
 
     // TODO turn to a component
-    var isEmptyObj = function(obj) {
+    var isEmptyObj = function (obj) {
       // null and undefined are "empty"
       if (obj === null) {
         return true;
@@ -44,64 +44,64 @@ angular.module("NamesModule").service("NamesService", [
      * Adds a name to the database;
      * @param nameEntry
      */
-    this.addName = function(word, fn) {
+    this.addName = function (word, fn) {
       // include logged in user's details, only if none exist - applies to accepting suggested names
       if (!word.submittedBy) word.submittedBy = $localStorage.username;
       return api
         .postJson("/v1/words", word)
-        .success(function() {
+        .success(function () {
           toastr.success(
             word.word + " was successfully added. Add another name"
           );
           fn();
           cacheNames();
         })
-        .error(function(error) {
+        .error(function (error) {
           toastr.error(word.word + " could not be added: " + error.message);
         });
     };
-    var getPrevAndNextNames = function(word, fn) {
+    var getPrevAndNextNames = function (word, fn) {
       var index = _.findIndex($localStorage.entries, { word: word }),
         prev = $localStorage.entries[index - 1],
         next = $localStorage.entries[index + 1];
       return fn(prev, next);
     };
-    this.prevAndNextNames = function(word, fn) {
+    this.prevAndNextNames = function (word, fn) {
       if ($localStorage.entries && $localStorage.entries.length)
         return getPrevAndNextNames(word, fn);
       else {
-        return api.get("/v1/words").success(function(resp) {
+        return api.get("/v1/words").success(function (resp) {
           $localStorage.entries = resp;
           return getPrevAndNextNames(word, fn);
         });
       }
     };
-    this.getCachedNames = function(fn) {
+    this.getCachedNames = function (fn) {
       if ($localStorage.entries && $localStorage.entries.length)
         return fn($localStorage.entries);
       else
-        return api.get("/v1/words?all=true").success(function(resp) {
+        return api.get("/v1/words?all=true").success(function (resp) {
           $localStorage.entries = resp;
           return fn($localStorage.entries);
         });
     };
-    this.search = function(name) {
+    this.search = function (name) {
       return api.get("/v1/search", { q: name });
     };
     /**
      * Updates an existing name in the database;
      * @param nameEntry
      */
-    this.updateName = function(originalName, wordEntry, fn) {
+    this.updateName = function (originalName, wordEntry, fn) {
       wordEntry = angular.copy(wordEntry);
       return api
         .putJson("/v1/words/" + originalName, wordEntry)
-        .success(function(resp) {
+        .success(function (resp) {
           toastr.success(wordEntry.word + " was successfully updated.");
           cacheNames();
           if (fn) return fn(resp);
         })
-        .error(function() {
+        .error(function () {
           toastr.error(
             wordEntry.word + " could not be updated. Please try again."
           );
@@ -111,60 +111,60 @@ angular.module("NamesModule").service("NamesService", [
      * Deletes a name from the database;
      * @param nameEntry
      */
-    this.deleteName = function(entry, fn, status) {
+    this.deleteName = function (entry, fn, status) {
       if (status === "suggested")
         return api
-          .delete("/v1/suggestions/" + entry.id)
-          .success(function() {
+          .delete("/v1/words/suggestions/" + entry.id)
+          .success(function () {
             toastr.success(
               entry.word +
-                " with id: " +
-                entry.id +
-                " has been deleted successfully"
+              " with id: " +
+              entry.id +
+              " has been deleted successfully"
             );
             return fn();
           })
-          .error(function() {
+          .error(function () {
             toastr.error(
               entry.word +
-                " with id: " +
-                entry.id +
-                " could not be deleted. Please try again."
+              " with id: " +
+              entry.id +
+              " could not be deleted. Please try again."
             );
           });
       return api
         .deleteJson("/v1/words/" + entry.word, entry)
-        .success(function() {
+        .success(function () {
           toastr.success(entry.word + " has been deleted successfully");
           cacheNames();
           fn();
         })
-        .error(function() {
+        .error(function () {
           toastr.error(entry.word + " could not be deleted. Please try again.");
         });
     };
-    this.deleteNames = function(words, fn, status) {
+    this.deleteNames = function (words, fn, status) {
       words = _.pluck(words, "word");
       if (status === "suggested")
         return api
-          .deleteJson("/v1/suggestions/batch", words)
-          .success(function() {
+          .deleteJson("/v1/words/suggestions/batch", words)
+          .success(function () {
             toastr.success(words.length + " suggested words have been deleted");
             return fn();
           })
-          .error(function() {
+          .error(function () {
             toastr.error("Could not delete selected words. Please try again.");
           });
       return api
         .deleteJson("/v1/words/batch", words)
-        .success(function() {
+        .success(function () {
           toastr.success(
             words.length + " words have been deleted successfully"
           );
           cacheNames();
           return fn();
         })
-        .error(function() {
+        .error(function () {
           toastr.error("Could not delete selected words. Please try again.");
         });
     };
@@ -172,29 +172,29 @@ angular.module("NamesModule").service("NamesService", [
      * Get a name
      * returns the one or zero result
      */
-    this.getName = function(name, duplicate, fn) {
+    this.getName = function (name, duplicate, fn) {
       return api
         .get("/v1/words/" + name, { duplicates: duplicate })
-        .success(function(resp) {
+        .success(function (resp) {
           return fn(resp);
         });
     };
-    this.getNames = function(filter) {
+    this.getNames = function (filter) {
       filter = !isEmptyObj(filter) ? filter : {};
       filter.page = filter.page || 1;
       filter.count = filter.count || 50;
       filter.orderBy = "createdAt";
-      if (filter.status === "suggested") return api.get("/v1/suggestions");
+      if (filter.status === "suggested") return api.get("/v1/words/suggestions");
       else if (filter.status === "published") filter.state = "PUBLISHED";
       else if (filter.status === "unpublished") filter.state = "NEW";
       else if (filter.status === "modified") filter.state = "MODIFIED";
       return api.get("/v1/words", filter);
     };
-    this.countNames = function(status, fn) {
+    this.countNames = function (status, fn) {
       var endpoint = "/v1/words/meta";
-      if (status === "published") endpoint = "/v1/search/meta";
-      if (status === "suggested") endpoint = "/v1/suggestions/meta";
-      return api.get(endpoint, { count: true }).success(function(resp) {
+      if (status === "published") endpoint = "/v1/words/search/meta";
+      if (status === "suggested") endpoint = "/v1/words/suggestions/meta";
+      return api.get(endpoint, { count: true }).success(function (resp) {
         if (status === "modified") return fn(resp.totalModifiedNames);
         else if (status === "published") return fn(resp.totalPublishedNames);
         else if (status === "unpublished") return fn(resp.totalNewNames);
@@ -203,51 +203,57 @@ angular.module("NamesModule").service("NamesService", [
         else return fn(resp);
       });
     };
-    this.getRecentlyIndexedNames = function(fn) {
-      return api.get("/v1/search/activity?q=index").success(fn);
+    this.getRecentlyIndexedNames = function (fn) {
+      return api.get("/v1/words/search/activity?q=index").success(fn);
     };
-    this.addNameToIndex = function(name) {
-      return api.postJson("/v1/search/indexes/" + name);
+    this.addNameToIndex = function (name) {
+      return api.postJson("/v1/words/search/indexes/" + name);
     };
-    this.removeNameFromIndex = function(name) {
-      return api.deleteJson("/v1/search/indexes/" + name);
+    this.removeNameFromIndex = function (name) {
+      return api.deleteJson("/v1/words/search/indexes/" + name);
     };
-    this.addNamesToIndex = function(namesJsonArray) {
+    this.addNamesToIndex = function (namesJsonArray) {
       var words = _.pluck(namesJsonArray, "word");
-      return api.postJson("/v1/search/indexes/batch", words);
+      return api.postJson("/v1/words/search/indexes/batch", words);
     };
-    this.removeNamesFromIndex = function(namesJsonArray) {
+    this.removeNamesFromIndex = function (namesJsonArray) {
       var words = _.pluck(namesJsonArray, "word");
-      return api.deleteJson("/v1/search/indexes/batch", words);
+      return api.deleteJson("/v1/words/search/indexes/batch", words);
     };
-    this.getRecentFeedbacks = function(fn) {
-      return api.get("/v1/feedbacks").success(fn);
+    this.getRecentFeedbacks = function (fn) {
+      return api.get("/v1/words/feedback").success(fn);
     };
-    this.getFeedback = function(word, fn) {
+    this.getFeedback = function (word, fn) {
       return api
-        .get("/v1/feedbacks/", {
+        .get("/v1/words/feedback/", {
           word: word,
           feedback: true
         })
-        .success(function(resp) {
+        .success(function (resp) {
           return fn(resp);
         });
     };
-    this.deleteFeedbacks = function(word, fn) {
+    this.deleteFeedbacks = function (word, fn) {
       return api
-        .deleteJson("/v1/feedbacks/?word=" + word)
-        .success(fn)
-        .error(function() {
+        .deleteJson("/v1/words/feedback/?word=" + word)
+        .success(function () {
+          toastr.success('All Feedbacks on ' + word + ' were deleted successfully!');
+          fn();
+        })
+        .error(function () {
           return toastr.error(
             "Feedbacks on " + word + " were not deleted. Please try again."
           );
         });
     };
-    this.deleteFeedback = function(id, fn) {
+    this.deleteFeedback = function (id, word, fn) {
       return api
-        .deleteJson("/v1/feedbacks/" + id)
-        .success(fn)
-        .error(function() {
+        .deleteJson("/v1/words/feedback/" + word + "/" + id)
+        .success(function () {
+          toastr.success(`Feedback on ${word} deleted successfully!`);
+          return fn();
+        })
+        .error(function () {
           return toastr.error("Feedback was not deleted. Please try again.");
         });
     };

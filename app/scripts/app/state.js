@@ -20,7 +20,7 @@ angular.module('dashboardappApp').config([
 
       // Errors > 404
       .state('error.404', {
-        page_title: 'Yoruba Names - Admin - Error 404',
+        page_title: 'Yoruba Words - Admin - Error 404',
         url: '/404',
         templateUrl: 'tmpls/error.404.html'
       });
