@@ -1,6 +1,6 @@
 <div class="panel panel-default" ng-repeat="definition in word.definitions track by $index">
     <div class="panel-heading">
-        <a class="btn btn-xs btn-danger remove" ng-click="remove_definition($index)">
+        <a class="btn btn-xs btn-danger remove" ng-click="remove_definition($index)" title="Remove definition">
             <i class="fa fa-times text-right"></i>
         </a>
     </div>
@@ -22,7 +22,7 @@
         <p class="text-right help-block">
             <a ng-click="add_example(definition)">Add an example</a>
         </p>
-        <div class="row example" ng-repeat="example in definition.examples track by $exampleIndex">
+        <div class="row example" ng-repeat="example in definition.examples track by $index">
             <div class="col-sm-12">
                 <h4>EXAMPLE</h4>
             </div>
@@ -45,9 +45,11 @@
                     <option value="Proverb">Aphorism/Proverb</option>
                 </select>
             </div>
-            <a class="btn btn-xs btn-daner remove" ng-click="remove_example(definition, $exampleIndex)">
-                <i class="fa fa-times"></i>
-            </a>
+            <div class="col-sm-12 text-right">
+                <a class="btn btn-xs btn-danger remove" ng-click="remove_example(definition, $index)" title="Remove example">
+                    <i class="fa fa-times"></i>
+                </a>
+            </div>
         </div>
     </div>
 </div>
