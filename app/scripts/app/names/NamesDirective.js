@@ -117,6 +117,7 @@ angular
           };
 
           scope.add_example = function (definition) {
+            definition.examples = definition.examples || [];
             return definition.examples.push({
               content: "",
               englishTranslation: "",
@@ -125,6 +126,7 @@ angular
           };
 
           scope.remove_example = function (definition, index) {
+            definition.examples = definition.examples || [];
             return definition.examples.splice(index, 1);
           };
 
