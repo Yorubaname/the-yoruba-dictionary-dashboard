@@ -19,7 +19,7 @@
                     ng-model="definition.englishTranslation"></textarea>
             </div>
         </div>
-        <p class="text-right help-block" ng-show="!definition.examples.length">
+        <p class="text-right help-block">
             <a ng-click="add_example(definition)">Add an example</a>
         </p>
         <div class="row example" ng-repeat="example in definition.examples track by $exampleIndex">
