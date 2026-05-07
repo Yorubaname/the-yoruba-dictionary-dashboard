@@ -311,13 +311,10 @@ angular
        * Adds the suggested name to the list of words eligible to be added to search index
        */
       var acceptSuggestedName = function (entry) {
-        // Change the state of the 'SUGGESTED' name TO 'NEW' to put it on the review queue
-        entry.state = "NEW";
-        if (!$.isEmptyObject(entry)) {
-          return namesService.updateName(entry.word, entry, function () {
-            $scope.wordsList.splice($scope.wordsList.indexOf(entry), 1);
-          });
-        }
+        if (!entry || !entry.id) return;
+        return namesService.acceptSuggestedName(entry, function () {
+          $scope.wordsList.splice($scope.wordsList.indexOf(entry), 1);
+        });
       };
       // Accept Suggested Name/s
       $scope.accept = function (entry) {
