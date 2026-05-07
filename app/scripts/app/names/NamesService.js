@@ -168,6 +168,18 @@ angular.module("NamesModule").service("NamesService", [
           toastr.error("Could not delete selected words. Please try again.");
         });
     };
+    this.acceptSuggestedName = function (entry, fn) {
+      return api
+        .postJson("/v1/words/suggestions/" + entry.id + "/accept")
+        .success(function (resp) {
+          toastr.success(entry.word + " has been accepted for review");
+          cacheNames();
+          if (fn) return fn(resp);
+        })
+        .error(function () {
+          toastr.error(entry.word + " could not be accepted. Please try again.");
+        });
+    };
     /**
      * Get a name
      * returns the one or zero result
@@ -198,7 +210,7 @@ angular.module("NamesModule").service("NamesService", [
         if (status === "modified") return fn(resp.totalModifiedNames);
         else if (status === "published") return fn(resp.totalPublishedNames);
         else if (status === "unpublished") return fn(resp.totalNewNames);
-        else if (status === "suggested") return fn(resp.totalSuggestedNames);
+        else if (status === "suggested") return fn(resp.totalSuggestedWords);
         else if (status === "all") return fn(resp.totalNames);
         else return fn(resp);
       });
