@@ -416,4 +416,32 @@ angular
       // noop function as there's no option for mass feedback delete by ids
       $scope.deleteAll = function () { };
     }
+  ])
+  .controller("namesDefinitionsNeedingReviewCtrl", [
+    "$scope",
+    "NamesService",
+    function ($scope, namesService) {
+      $scope.wordsList = [];
+      $scope.count = 50;
+      $scope.pagination = { current: 1 };
+      $scope.sort = function (keyname) {
+        $scope.sortKey = keyname;
+        $scope.reverse = !$scope.reverse;
+      };
+      $scope.fetch = function (newPageNumber, count) {
+        var page = newPageNumber || 1;
+        var pageSize = count || $scope.count;
+        // Fetch one extra to detect whether a next page exists
+        return namesService
+          .getDefinitionsNeedingReview(page, pageSize + 1)
+          .success(function (responseData) {
+            var hasNextPage = responseData.length > pageSize;
+            $scope.wordsList = hasNextPage ? responseData.slice(0, pageSize) : responseData;
+            $scope.pagination.current = page;
+            $scope.wordsListItems = hasNextPage ? page * pageSize + 1
+              : (page - 1) * pageSize + responseData.length;
+          });
+      };
+      $scope.fetch();
+    }
   ]);
