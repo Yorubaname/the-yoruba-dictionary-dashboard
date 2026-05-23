@@ -55,6 +55,14 @@ angular.module("NamesModule").config([
         url: "/feedbacks",
         templateUrl: "tmpls/words/feedbacks-list.html",
         controller: "namesFeedbacksCtrl"
+      })
+      // Words > With New Definitions
+      .state("auth.words.definitions_needs_review", {
+        page_title: "Yoruba Words - Admin - With New Definitions",
+        ncyBreadcrumb: { label: "With New Definitions" },
+        url: "/definitions/needs-review",
+        templateUrl: "tmpls/words/definitions-needs-review.html",
+        controller: "namesDefinitionsNeedingReviewCtrl"
       });
   }
 ]);

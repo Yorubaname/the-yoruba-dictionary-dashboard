@@ -43,6 +43,10 @@ angular.module('CommonModule').controller('SideMenuController', [
           {
             title: 'Feedbacks',
             link: 'auth.words.feedbacks'
+          },
+          {
+            title: 'With New Definitions',
+            link: 'auth.words.definitions_needs_review'
           }
         ]
       }

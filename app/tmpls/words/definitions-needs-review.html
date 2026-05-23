@@ -1,0 +1,65 @@
+<div class="row">
+
+    <div class="col-md-12">
+        <div class="well well-sm text-center" ng-show="!wordsList.length">
+            <h3 class="text-muted">No words with definitions needing review!</h3>
+            <p>Words that have new definitions awaiting review will appear here.</p>
+        </div>
+        <table class="table table-yuk2" ng-show="wordsList.length">
+            <thead>
+                <tr>
+                    <th>Word
+                        <span ng-click="sort('wordTitle')" class="badge badge-default pull-right">
+                            <i class="glyphicon sort-icon"
+                                ng-class="{'glyphicon-chevron-up':reverse,'glyphicon-chevron-down':!reverse}"></i>
+                        </span>
+                    </th>
+                    <th>State</th>
+                    <th>Definitions Needing Review
+                        <span ng-click="sort('definitionsNeedingReviewCount')" class="badge badge-default pull-right">
+                            <i class="glyphicon sort-icon"
+                                ng-class="{'glyphicon-chevron-up':reverse,'glyphicon-chevron-down':!reverse}"></i>
+                        </span>
+                    </th>
+                    <th>Last Definition Added
+                        <span ng-click="sort('lastDefinitionAddedAt')" class="badge badge-default pull-right">
+                            <i class="glyphicon sort-icon"
+                                ng-class="{'glyphicon-chevron-up':reverse,'glyphicon-chevron-down':!reverse}"></i>
+                        </span>
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr dir-paginate="entry in wordsList|orderBy:sortKey:reverse|itemsPerPage:count"
+                    total-items="wordsListItems" current-page="pagination.current">
+                    <td>
+                        <a ui-sref="auth.words.edit_entries({entry:entry.wordTitle})">
+                            <strong>{{entry.wordTitle}}</strong>
+                        </a>
+                    </td>
+                    <td>{{entry.state}}</td>
+                    <td>{{entry.definitionsNeedingReviewCount}}</td>
+                    <td>{{entry.lastDefinitionAddedAt | date:'mediumDate'}}</td>
+                </tr>
+            </tbody>
+            <tfoot>
+                <tr ng-hide="!wordsList.length">
+                    <td colspan="2">
+                        Show
+                        <select ng-model="count" ng-options="n for n in [ 10, 20, 50, 100, 250, 500 ]"
+                            ng-change="fetch(1, count)"></select> words
+                    </td>
+                    <td colspan="2"></td>
+                </tr>
+                <tr>
+                    <td colspan="4" class="text-center">
+                        <dir-pagination-controls max-size="12" direction-links="true" boundary-links="true"
+                            on-page-change="fetch(newPageNumber, count)">
+                        </dir-pagination-controls>
+                    </td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+
+</div>

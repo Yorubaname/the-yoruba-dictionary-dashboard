@@ -269,5 +269,11 @@ angular.module("NamesModule").service("NamesService", [
           return toastr.error("Feedback was not deleted. Please try again.");
         });
     };
+    this.getDefinitionsNeedingReview = function (page, count) {
+      return api.get("/v1/words/definitions/needs-review", {
+        page: page,
+        count: count
+      });
+    };
   }
 ]);
