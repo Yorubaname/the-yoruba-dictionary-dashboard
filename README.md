@@ -28,7 +28,7 @@ changes are made to the code, they are picked up automatically with the browser 
 
 To start the application in this mode follow the following steps:
 1. cd into the directory where Gruntfile.js is located
-2. run `grunt serve` the application starts and would be available at http://localhost:9000
+2. run `grunt serve` the application starts and would be available at http://localhost:9500
 
 
 ### Running from bundled source (prod mode)
