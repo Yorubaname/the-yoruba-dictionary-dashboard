@@ -2,6 +2,116 @@
 
 "use strict";
 
+var GLOSSARY_REGENERATE_PROMPT = "Do you want to automatically generate gloss from this morphology value?" +
+  "\nSelect Cancel/No to leave as is.";
+var GLOSSARY_FETCH_SUCCESS = "Gloss generated from morphology. Please review and adjust as needed.";
+var GLOSSARY_FETCH_ERROR = "Could not generate gloss from morphology.";
+var GLOSSARY_RECHECK_WARNING = "Please, re-check gloss before saving/publishing as some parts might have been removed/changed.";
+var PUBLISH_REVIEW_WARNING_PREFIX = "The following reviewed definitions will become publicly visible after publish:";
+var PUBLISH_REVIEW_WARNING_SUFFIX = "\n\nContinue publishing?";
+
+function notifySubmittedMeanings(toastr, namesEtymologyWorkflow, submissionResult) {
+  var message = namesEtymologyWorkflow.formatSubmittedMeaningsMessage(submissionResult);
+  if (message) {
+    toastr.info(message, null, {
+      timeOut: 0,
+      extendedTimeOut: 0,
+      closeButton: true,
+      tapToDismiss: false
+    });
+  }
+}
+
+function submitMissingDefinitionsWithNotify(scope, etymologyService, namesEtymologyWorkflow, toastr) {
+  return etymologyService.submitMissingDefinitions(scope.word.etymology)
+    .then(function (submissionResult) {
+      notifySubmittedMeanings(toastr, namesEtymologyWorkflow, submissionResult);
+      return submissionResult;
+    });
+}
+
+function generateGlossary(scope, etymologyService, namesEtymologyWorkflow, toastr) {
+  var regenerate = confirm(GLOSSARY_REGENERATE_PROMPT);
+
+  if (!regenerate) {
+    return;
+  }
+
+  if (!scope.word.morphology) {
+    scope.word.etymology = [];
+    return;
+  }
+
+  namesEtymologyWorkflow.prepareGlossary(scope.word.morphology, etymologyService)
+    .then(function (result) {
+      scope.word.morphology = result.normalizedMorphology;
+      scope.word.etymology = result.etymology;
+      toastr.success(GLOSSARY_FETCH_SUCCESS);
+    })
+    .catch(function (error) {
+      toastr.error(GLOSSARY_FETCH_ERROR);
+      console.error(GLOSSARY_FETCH_ERROR + ":", error);
+    });
+
+  toastr.warning(GLOSSARY_RECHECK_WARNING);
+}
+
+function definitionNeedsReview(definition) {
+  return !!definition && (definition.needsReview === true || definition.NeedsReview === true);
+}
+
+function hasReviewableYorubaDefinition(definition) {
+  if (!definition) {
+    return false;
+  }
+
+  var content = (definition.content || "").trim();
+  if (!content) {
+    return false;
+  }
+
+  return !/^\{\{.*\}\}$/.test(content);
+}
+
+function getDefinitionsMarkedReviewed(word) {
+  var definitions = word && Array.isArray(word.definitions) ? word.definitions : [];
+  return definitions.filter(function (definition) {
+    return definitionNeedsReview(definition) && hasReviewableYorubaDefinition(definition) && definition.reviewed === true;
+  });
+}
+
+function getUnreviewedRequiredDefinitions(word) {
+  var definitions = word && Array.isArray(word.definitions) ? word.definitions : [];
+  return definitions.filter(function (definition) {
+    return definitionNeedsReview(definition) && (!hasReviewableYorubaDefinition(definition) || definition.reviewed !== true);
+  });
+}
+
+function finalizeReviewedDefinitions(word) {
+  var definitions = word && Array.isArray(word.definitions) ? word.definitions : [];
+  definitions.forEach(function (definition) {
+    if (definitionNeedsReview(definition) && hasReviewableYorubaDefinition(definition) && definition.reviewed === true) {
+      definition.needsReview = false;
+      definition.NeedsReview = false;
+    }
+  });
+}
+
+function buildPublishReviewWarning(word) {
+  var reviewedDefinitions = getDefinitionsMarkedReviewed(word);
+  if (reviewedDefinitions.length === 0) {
+    return "";
+  }
+
+  var lines = reviewedDefinitions.map(function (definition, index) {
+    var yoruba = (definition.content || "(No Yoruba definition)").trim();
+    var english = (definition.englishTranslation || "(No English translation)").trim();
+    return index + 1 + ". Yoruba: \"" + yoruba + "\" | English: \"" + english + "\"";
+  });
+
+  return PUBLISH_REVIEW_WARNING_PREFIX + "\n\n" + lines.join("\n") + PUBLISH_REVIEW_WARNING_SUFFIX;
+}
+
 /* Controllers */
 angular
   .module("NamesModule")
@@ -9,14 +119,28 @@ angular
     "$rootScope",
     "$scope",
     "NamesService",
-    function ($rootScope, $scope, namesService) {
+    "EtymologyService",
+    "NamesEtymologyWorkflow",
+    "toastr",
+    function ($rootScope, $scope, namesService, etymologyService, namesEtymologyWorkflow, toastr) {
       $scope.new = true;
       $scope.word = {};
+
       $scope.submit = function () {
-        return namesService.addName($scope.word, function () {
-          // reset the form models fields
-          $scope.word = {};
-        });
+        if (!Array.isArray($scope.word.etymology) || $scope.word.etymology.length === 0) {
+          return namesService.addName($scope.word, function () {
+            // reset the form models fields
+            $scope.word = {};
+          });
+        }
+
+        return submitMissingDefinitionsWithNotify($scope, etymologyService, namesEtymologyWorkflow, toastr)
+          .then(function () {
+            return namesService.addName($scope.word, function () {
+              // reset the form models fields
+              $scope.word = {};
+            });
+          });
       };
 
       $scope.publish = function () {
@@ -26,25 +150,7 @@ angular
       };
 
       $scope.generate_glossary = function () {
-        // split the morphology with the dashes if it's not empty
-        if ($scope.word.morphology) {
-          var etymology = $scope.word.etymology;
-          var splitMorphology = $scope.word.morphology.split("-");
-          // add each entry to etymology list if it does not exist already
-          for (var i = 0; i < splitMorphology.length; i++) {
-            var newPart = splitMorphology[i];
-            var oldPart = etymology[i];
-            if (!oldPart) {
-              etymology.push({
-                part: newPart,
-                meaning: ""
-              });
-            } else {
-              oldPart.part = newPart;
-            }
-          }
-          $scope.word.etymology = etymology.slice(0, splitMorphology.length);
-        }
+        generateGlossary($scope, etymologyService, namesEtymologyWorkflow, toastr);
       };
     }
   ])
@@ -53,9 +159,11 @@ angular
     "$stateParams",
     "$state",
     "NamesService",
+    "EtymologyService",
+    "NamesEtymologyWorkflow",
     "toastr",
     "$window",
-    function ($scope, $stateParams, $state, namesService, toastr, $window) {
+    function ($scope, $stateParams, $state, namesService, etymologyService, namesEtymologyWorkflow, toastr, $window) {
       var originalName = null;
       namesService.prevAndNextNames($stateParams.entry, function (prev, next) {
         $scope.prev = prev;
@@ -75,86 +183,63 @@ angular
         }
       });
 
-      const mapExistingPartMeanings = (etymology) => {
-        return etymology.reduce((map, item) => {
-          map[item.part.toLowerCase().normalize('NFC')] = item.meaning;
-          return map;
-        }, {});
-      };
-
-      const updateEtymology = (etymologyParts, partMeaningDict, etymology) => {
-        const alreadyAdded = {};
-        let etymologyCounter = 0;
-
-        etymologyParts.forEach(part => {
-          if (!alreadyAdded[part]) {
-            const newEty = {
-              part: part,
-              meaning: partMeaningDict[part] || ''
-            };
-
-            if (etymology[etymologyCounter]) {
-              etymology[etymologyCounter] = newEty;
-            } else {
-              etymology.push(newEty);
-            }
-
-            etymologyCounter++;
-            alreadyAdded[part] = true;
-          }
-        });
-
-        return etymology.slice(0, etymologyCounter);
-      };
-
       $scope.generate_glossary = function () {
-        var regenerate = confirm("Do you want to automatically generate gloss from this morphology value?" +
-          "\nSelect Cancel/No to leave as is.");
+        generateGlossary($scope, etymologyService, namesEtymologyWorkflow, toastr);
+      };
 
-        if (!regenerate) {
-          return;
-        }
-
-        if (!$scope.word.morphology) {
-          $scope.word.etymology = [];
-          return;
-        }
-
-        $scope.word.morphology = $scope.word.morphology.toLowerCase().normalize('NFC');
-
-        let etymology = $scope.word.etymology;
-        const partMeaningDict = mapExistingPartMeanings(etymology);
-        const etymologyParts = $scope.word.morphology
-          .split(',')
-          .flatMap(value => value.trim().split('-'))
-          .filter(Boolean);
-
-        $scope.word.etymology = updateEtymology(etymologyParts, partMeaningDict, etymology);
-
-        toastr.warning("Please, re-check gloss before saving/publishing as some parts might have been removed/changed.");
+      $scope.has_unreviewed_required_definitions = function () {
+        return getUnreviewedRequiredDefinitions($scope.word).length > 0;
       };
 
       $scope.publish = function () {
-        // update name first, then publish
-        return namesService.updateName(originalName, $scope.word, function () {
-          // Publish the name
-          return namesService
-            .addNameToIndex($scope.word.word)
-            .success(function () {
-              $scope.word.state = "PUBLISHED";
-              $scope.word.indexed = true;
-              toastr.info($scope.word.word + " has been published");
-              return $window.history.back();
+        if ($scope.has_unreviewed_required_definitions()) {
+          toastr.warning("Please review all definitions needing review before publishing.");
+          return;
+        }
+
+        var publishReviewWarning = buildPublishReviewWarning($scope.word);
+        if (publishReviewWarning && !$window.confirm(publishReviewWarning)) {
+          return;
+        }
+
+        finalizeReviewedDefinitions($scope.word);
+
+        // update word first, then publish
+        return submitMissingDefinitionsWithNotify($scope, etymologyService, namesEtymologyWorkflow, toastr)
+          .then(function () {
+            return namesService.updateName(originalName, $scope.word, function () {
+              // Publish the word
+              return namesService
+                .addNameToIndex($scope.word.word)
+                .success(function () {
+                  $scope.word.state = "PUBLISHED";
+                  $scope.word.indexed = true;
+                  toastr.info($scope.word.word + " has been published");
+                  return $window.history.back();
+                });
             });
-        });
+          });
       };
+
       $scope.goto = function (entry) {
         namesService.updateName(originalName, $scope.word);
         return $state.go("auth.words.edit_entries", { entry: entry });
       };
+
       $scope.submit = function () {
-        return namesService.updateName(originalName, $scope.word);
+        if ($scope.has_unreviewed_required_definitions()) {
+          toastr.warning("Please review all definitions needing review before saving.");
+          return;
+        }
+
+        finalizeReviewedDefinitions($scope.word);
+
+        return submitMissingDefinitionsWithNotify($scope, etymologyService, namesEtymologyWorkflow, toastr)
+          .then(function () {
+            return namesService.updateName(originalName, $scope.word);
+          });
       };
+
       $scope.delete = function () {
         if (
           $window.confirm(
