@@ -19,6 +19,20 @@
                     ng-model="definition.englishTranslation"></textarea>
             </div>
         </div>
+        <div class="row" ng-if="is_review_required(definition)">
+            <div class="col-sm-12">
+                <label class="checkbox-inline">
+                    <input type="checkbox" name="reviewed[{{$index}}]" ng-model="definition.reviewed" ng-required="is_review_required(definition)" ng-disabled="!can_mark_reviewed(definition)">
+                    Reviewed
+                </label>
+                <span ng-show="!can_mark_reviewed(definition)" class="help-block text-warning">
+                    Populate the Yoruba definition before marking this item as reviewed.
+                </span>
+                <span ng-show="form.$dirty && can_mark_reviewed(definition) && !definition.reviewed" class="help-block text-danger">
+                    Please mark this definition as reviewed before saving or publishing.
+                </span>
+            </div>
+        </div>
         <p class="text-right help-block">
             <a ng-click="add_example(definition)">Add an example</a>
         </p>
