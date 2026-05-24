@@ -516,15 +516,12 @@ angular
       $scope.fetch = function (newPageNumber, count) {
         var page = newPageNumber || 1;
         var pageSize = count || $scope.count;
-        // Fetch one extra to detect whether a next page exists
         return namesService
-          .getDefinitionsNeedingReview(page, pageSize + 1)
+          .getDefinitionsNeedingReview(page, pageSize)
           .success(function (responseData) {
-            var hasNextPage = responseData.length > pageSize;
-            $scope.wordsList = hasNextPage ? responseData.slice(0, pageSize) : responseData;
-            $scope.pagination.current = page;
-            $scope.wordsListItems = hasNextPage ? page * pageSize + 1
-              : (page - 1) * pageSize + responseData.length;
+            $scope.wordsList = responseData.items || [];
+            $scope.pagination.current = responseData.page || page;
+            $scope.wordsListItems = responseData.totalItems || 0;
           });
       };
       $scope.fetch();
