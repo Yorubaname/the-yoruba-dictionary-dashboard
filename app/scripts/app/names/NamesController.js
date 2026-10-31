@@ -171,7 +171,7 @@ angular
       });
       namesService.getName($stateParams.entry, false, function (resp) {
         $scope.word = resp;
-        originalName = resp.word;
+        originalName = resp.key;
         
         // A word must have at least one definition
         if (!resp.definitions.length) {
@@ -210,7 +210,7 @@ angular
             return namesService.updateName(originalName, $scope.word, function () {
               // Publish the word
               return namesService
-                .addNameToIndex($scope.word.word)
+                .addNameToIndex(originalName)
                 .success(function () {
                   $scope.word.state = "PUBLISHED";
                   $scope.word.indexed = true;
