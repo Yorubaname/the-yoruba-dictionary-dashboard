@@ -77,30 +77,36 @@ angular.module("NamesModule").service("NamesService", [
       }
     };
     var namesLoadRequest;
-    this.getCachedNames = function (fn) {
+    var requestAllNames = function () {
       if (!namesLoadRequest) {
-        namesLoadRequest = api.get("/v1/words", { all: true });
-        namesLoadRequest.then(
+        var request = api.get("/v1/words", { all: true });
+        namesLoadRequest = request;
+        request.then(
           function (response) {
             $localStorage.entries = response.data;
-            namesLoadRequest = null;
+            if (namesLoadRequest === request) namesLoadRequest = null;
           },
           function () {
-            namesLoadRequest = null;
+            if (namesLoadRequest === request) namesLoadRequest = null;
           }
         );
       }
-
-      return namesLoadRequest.then(function (response) {
-        $localStorage.entries = response.data;
+      return namesLoadRequest;
+    };
+    this.getCachedNames = function (fn) {
+      if ($localStorage.entries && $localStorage.entries.length)
         return fn($localStorage.entries);
+      return this.refreshNames(fn);
+    };
+    this.refreshNames = function (fn) {
+      return requestAllNames().then(function (response) {
+        $localStorage.entries = response.data;
+        if (fn) return fn($localStorage.entries);
+        return $localStorage.entries;
       });
     };
     this.getAllNames = function () {
       return api.get("/v1/words", { all: true });
-    };
-    this.search = function (name) {
-      return api.get("/v1/search", { q: name });
     };
     /**
      * Updates an existing name in the database;

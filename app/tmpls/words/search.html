@@ -6,7 +6,7 @@
     <form ng-submit="exec_search()">
       <div class="input-group sepH_b">
         <input class="form-control input-lg" placeholder="Enter word" id="appendedInputButton" type="text"
-          ng-model="search.entry" typeahead="entry.word for entry in names | filter:searchByWord($viewValue) | limitTo:8" keyboard>
+          ng-model="search.entry" ng-change="refreshNamesOnTyping(search.entry)" typeahead="entry.word for entry in names | filter:searchByWord($viewValue) | limitTo:8" keyboard>
         <span class="input-group-btn">
           <button class="btn btn-success btn-lg" ng-disabled="!search.entry" ng-click="exec_search()"><i
               class="fa fa-search"></i> Search</button>

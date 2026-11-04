@@ -7,6 +7,12 @@ angular.module('NamesModule').controller('SearchController', [
       return (value || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLocaleLowerCase();
     }
 
+    function mapNames(entries) {
+      return (entries || []).map(function (entry) {
+        return { word: entry.word || entry.name, name: entry.word || entry.name };
+      });
+    }
+
     $scope.searchByWord = function (query) {
       var normalizedQuery = normalizeSearchText(query);
       return function (entry) {
@@ -15,11 +21,23 @@ angular.module('NamesModule').controller('SearchController', [
       };
     };
 
+    $scope.searchNamesRefreshStarted = false;
+    $scope.refreshNamesOnTyping = function (query) {
+      if (!query) {
+        $scope.searchNamesRefreshStarted = false;
+        return;
+      }
+      if ($scope.searchNamesRefreshStarted) return;
+
+      $scope.searchNamesRefreshStarted = true;
+      api.refreshNames(function (names) {
+        $scope.names = mapNames(names);
+      });
+    };
+
     $scope.search = $scope.search || {};
     api.getCachedNames(function (names) {
-      $scope.names = (names || []).map(function (entry) {
-        return { word: entry.word || entry.name, name: entry.word || entry.name };
-      });
+      $scope.names = mapNames(names);
     });
 
     $scope.exec_search = function () {
