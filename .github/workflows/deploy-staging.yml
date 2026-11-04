@@ -40,5 +40,6 @@ jobs:
           test -n "$EC2_INSTANCE_IP"
           printf '%s\n' "$SSH_PRIVATE_KEY" > private_key
           chmod 600 private_key
-          rsync -avz --exclude='.htaccess' -e 'ssh -i private_key -o StrictHostKeyChecking=no' dist/ "ec2-user@$EC2_INSTANCE_IP:/var/www/wordmanager/"
+          rsync -avz --exclude='.htaccess' -e 'ssh -i private_key -o StrictHostKeyChecking=no' dist/ "ec2-user@$EC2_INSTANCE_IP:/var/www/wordmanager-staging/"
+
 
