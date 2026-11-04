@@ -76,14 +76,25 @@ angular.module("NamesModule").service("NamesService", [
         });
       }
     };
+    var namesLoadRequest;
     this.getCachedNames = function (fn) {
-      if ($localStorage.entries && $localStorage.entries.length)
+      if (!namesLoadRequest) {
+        namesLoadRequest = api.get("/v1/words", { all: true });
+        namesLoadRequest.then(
+          function (response) {
+            $localStorage.entries = response.data;
+            namesLoadRequest = null;
+          },
+          function () {
+            namesLoadRequest = null;
+          }
+        );
+      }
+
+      return namesLoadRequest.then(function (response) {
+        $localStorage.entries = response.data;
         return fn($localStorage.entries);
-      else
-        return api.get("/v1/words?all=true").success(function (resp) {
-          $localStorage.entries = resp;
-          return fn($localStorage.entries);
-        });
+      });
     };
     this.getAllNames = function () {
       return api.get("/v1/words", { all: true });
