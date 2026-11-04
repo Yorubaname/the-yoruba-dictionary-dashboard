@@ -17,7 +17,7 @@
         </div>
         <div class="search_section hidden-sm hidden-xs" ng-controller="SearchController">
             <form ng-submit="exec_search()">
-            <input type="text" class="form-control input-sm" ng-model="search.entry" ng-change="refreshNamesOnTyping(search.entry)" typeahead="entry.word for entry in names | filter:searchByWord($viewValue) | limitTo:8" keyboard>
+            <input type="text" class="form-control input-sm" ng-model="search.entry" ng-change="resetSearchRefresh(search.entry)" typeahead="entry.word for entry in searchSuggestions($viewValue)" keyboard>
             <button class="btn btn-link btn-sm" type="button" ng-disabled="!search.entry" ng-click="exec_search()"><span class="icon_search"></span></button>
             </form>
         </div>

@@ -13,25 +13,27 @@ angular.module('NamesModule').controller('SearchController', [
       });
     }
 
-    $scope.searchByWord = function (query) {
-      var normalizedQuery = normalizeSearchText(query);
-      return function (entry) {
-        var word = entry.word || entry.name || '';
-        return normalizeSearchText(word).indexOf(normalizedQuery) !== -1;
-      };
+    var searchNamesRefreshPromise;
+    $scope.resetSearchRefresh = function (query) {
+      if (!query) searchNamesRefreshPromise = null;
     };
-
-    $scope.searchNamesRefreshStarted = false;
-    $scope.refreshNamesOnTyping = function (query) {
-      if (!query) {
-        $scope.searchNamesRefreshStarted = false;
-        return;
+    $scope.searchSuggestions = function (query) {
+      if (!query) return [];
+      if (!searchNamesRefreshPromise) {
+        searchNamesRefreshPromise = api.refreshNames().then(function (names) {
+          $scope.names = mapNames(names);
+          return $scope.names;
+        }, function () {
+          searchNamesRefreshPromise = null;
+          return $scope.names || [];
+        });
       }
-      if ($scope.searchNamesRefreshStarted) return;
 
-      $scope.searchNamesRefreshStarted = true;
-      api.refreshNames(function (names) {
-        $scope.names = mapNames(names);
+      var normalizedQuery = normalizeSearchText(query);
+      return searchNamesRefreshPromise.then(function (names) {
+        return names.filter(function (entry) {
+          return normalizeSearchText(entry.word || entry.name).indexOf(normalizedQuery) !== -1;
+        }).slice(0, 8);
       });
     };
 

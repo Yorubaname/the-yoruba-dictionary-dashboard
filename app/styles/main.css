@@ -5652,3 +5652,24 @@ body.error_page {
 .icon_list.list_small li > span {
   margin-top: 10px;
 }
+
+/* Make the duplicate-word toast action visibly interactive. */
+#toast-container .toast-edit-link {
+  display: inline-block;
+  margin-top: 6px;
+  padding: 3px 8px;
+  border: 1px solid rgba(255, 255, 255, 0.85);
+  border-radius: 3px;
+  background-color: rgba(0, 0, 0, 0.14);
+  color: #fff;
+  font-weight: 700;
+  text-decoration: underline;
+}
+
+#toast-container .toast-edit-link:hover,
+#toast-container .toast-edit-link:focus {
+  background-color: rgba(0, 0, 0, 0.3);
+  color: #fff;
+  outline: 2px solid rgba(255, 255, 255, 0.8);
+  outline-offset: 1px;
+}

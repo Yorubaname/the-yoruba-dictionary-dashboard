@@ -154,7 +154,7 @@ angular
             if ((existing.word || '').toLocaleLowerCase() !== candidate.toLocaleLowerCase()) return;
 
             wordControl.$setValidity('alreadyExists', false);
-            duplicateWarningToast = toastr.error('Word already exists. <a href="#/words/edit/' + encodeURIComponent(existing.key || existing.word) + '">Edit this word</a>', '', {
+            duplicateWarningToast = toastr.error('Word already exists. <a class="toast-edit-link" href="#/words/edit/' + encodeURIComponent(existing.key || existing.word) + '">Edit this word</a>', '', {
               allowHtml: true, timeOut: 0, extendedTimeOut: 0, closeButton: true, tapToDismiss: false
             });
           }).error(function (response, status) {
