@@ -23,7 +23,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          npm ci
+          npm ci --legacy-peer-deps
           npm install --global bower
           bower install --allow-root
 
@@ -41,5 +41,6 @@ jobs:
           printf '%s\n' "$SSH_PRIVATE_KEY" > private_key
           chmod 600 private_key
           rsync -avz --exclude='.htaccess' -e 'ssh -i private_key -o StrictHostKeyChecking=no' dist/ "ec2-user@$EC2_INSTANCE_IP:/var/www/wordmanager/"
+
 
 
