@@ -28,23 +28,6 @@ angular
         }
       };
     }
-  ]) // Directive adds File Uploader widget on the New Name Form for uploading names in bulk
-  .directive("namesUpload", [
-    "uploadService",
-    function (Uploader) {
-      return {
-        controller: function ($scope) {
-          $scope.uploader = Uploader({
-            url: "/v1/names/upload",
-            alias: "nameFiles",
-            fileType: [
-              "text/csv",
-              "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-            ]
-          });
-        }
-      };
-    }
   ]) // Directive adds array of Etymology fields to the Name Form
   .directive("etymology", [
     "$stateParams",
