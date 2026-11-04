@@ -1,0 +1,45 @@
+﻿name: Deploy Dictionary Dashboard to PROD
+
+on:
+  push:
+    branches:
+      - PROD
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: PROD
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: '20'
+          cache: npm
+
+      - name: Install dependencies
+        run: |
+          npm ci
+          npm install --global bower
+          bower install --allow-root
+
+      - name: Build production dashboard
+        run: npx grunt build
+
+      - name: Deploy to EC2
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.DEPLOY_KEY }}
+          EC2_INSTANCE_IP: ${{ vars.EC2_INSTANCE_IP }}
+        run: |
+          set -euo pipefail
+          test -n "$SSH_PRIVATE_KEY"
+          test -n "$EC2_INSTANCE_IP"
+          printf '%s\n' "$SSH_PRIVATE_KEY" > private_key
+          chmod 600 private_key
+          rsync -avz --exclude='.htaccess' -e 'ssh -i private_key -o StrictHostKeyChecking=no' dist/ "ec2-user@$EC2_INSTANCE_IP:/var/www/wordmanager/"
+
+
