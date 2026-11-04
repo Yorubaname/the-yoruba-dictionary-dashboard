@@ -9,7 +9,7 @@
             <div class="form-group form-float">
               <div class="form-line">
                 <label for="word" class="required">Word</label>
-                <input type="text" id="word" name="wordInput" class="form-control" ng-model="word.word" ng-change="new && check_duplicate()" required keyboard />
+                <input type="text" id="word" name="wordInput" class="form-control" ng-model="word.word" ng-change="new && check_duplicate(form.wordInput)" required keyboard />
                 <span class="help-block text-danger" ng-show="form.wordInput.$error.alreadyExists">This word already exists.</span>
               </div>
             </div>

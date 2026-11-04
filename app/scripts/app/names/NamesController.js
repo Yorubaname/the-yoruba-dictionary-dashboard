@@ -131,9 +131,9 @@ angular
       var duplicateLookupId = 0;
       var duplicateWarningToast = null;
 
-      $scope.check_duplicate = function () {
+      $scope.check_duplicate = function (wordControl) {
         var candidate = ($scope.word.word || '').trim();
-        if (!$scope.form || !$scope.form.wordInput) return;
+        if (!wordControl) return;
 
         duplicateLookupId++;
         var lookupId = duplicateLookupId;
@@ -143,24 +143,24 @@ angular
           duplicateWarningToast = null;
         }
 
-        $scope.form.wordInput.$setValidity('alreadyExists', true);
-        $scope.form.wordInput.$setValidity('duplicateCheck', !candidate);
+        wordControl.$setValidity('alreadyExists', true);
+        wordControl.$setValidity('duplicateCheck', !candidate);
         if (!candidate) return;
 
         duplicateLookupTimeout = $timeout(function () {
           namesService.getName(candidate, false, function (existing) {
             if (lookupId !== duplicateLookupId || candidate.toLocaleLowerCase() !== ($scope.word.word || '').trim().toLocaleLowerCase()) return;
-            $scope.form.wordInput.$setValidity('duplicateCheck', true);
+            wordControl.$setValidity('duplicateCheck', true);
             if ((existing.word || '').toLocaleLowerCase() !== candidate.toLocaleLowerCase()) return;
 
-            $scope.form.wordInput.$setValidity('alreadyExists', false);
+            wordControl.$setValidity('alreadyExists', false);
             duplicateWarningToast = toastr.error('Word already exists. <a href="#/words/edit/' + encodeURIComponent(existing.key || existing.word) + '">Edit this word</a>', '', {
               allowHtml: true, timeOut: 0, extendedTimeOut: 0, closeButton: true, tapToDismiss: false
             });
           }).error(function (response, status) {
             if (lookupId !== duplicateLookupId || candidate.toLocaleLowerCase() !== ($scope.word.word || '').trim().toLocaleLowerCase()) return;
-            $scope.form.wordInput.$setValidity('duplicateCheck', true);
-            if (status === 404) $scope.form.wordInput.$setValidity('alreadyExists', true);
+            wordControl.$setValidity('duplicateCheck', true);
+            if (status === 404) wordControl.$setValidity('alreadyExists', true);
           });
         }, 300);
       };
