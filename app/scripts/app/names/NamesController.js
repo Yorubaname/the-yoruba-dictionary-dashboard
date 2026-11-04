@@ -122,25 +122,53 @@ angular
     "EtymologyService",
     "NamesEtymologyWorkflow",
     "toastr",
-    function ($rootScope, $scope, namesService, etymologyService, namesEtymologyWorkflow, toastr) {
+    "$timeout",
+    function ($rootScope, $scope, namesService, etymologyService, namesEtymologyWorkflow, toastr, $timeout) {
       $scope.new = true;
       $scope.word = {};
 
+      var duplicateLookupTimeout = null;
+      var duplicateLookupId = 0;
+      var duplicateWarningToast = null;
+
       $scope.check_duplicate = function () {
         var candidate = ($scope.word.word || '').trim();
-        if (!$scope.form || !$scope.form.wordInput || !candidate) return;
+        if (!$scope.form || !$scope.form.wordInput) return;
+
+        duplicateLookupId++;
+        var lookupId = duplicateLookupId;
+        if (duplicateLookupTimeout) $timeout.cancel(duplicateLookupTimeout);
+        if (duplicateWarningToast) {
+          toastr.clear(duplicateWarningToast);
+          duplicateWarningToast = null;
+        }
+
         $scope.form.wordInput.$setValidity('alreadyExists', true);
-        return namesService.getName(candidate, false, function (existing) {
-          if ((existing.word || '').toLocaleLowerCase() !== candidate.toLocaleLowerCase()) return;
-          $scope.form.wordInput.$setValidity('alreadyExists', false);
-          toastr.error('Word already exists. <a href="#/words/edit/' + encodeURIComponent(existing.key || existing.word) + '">Edit this word</a>', '', {
-            allowHtml: true, timeOut: 0, extendedTimeOut: 0, closeButton: true, tapToDismiss: false
+        $scope.form.wordInput.$setValidity('duplicateCheck', !candidate);
+        if (!candidate) return;
+
+        duplicateLookupTimeout = $timeout(function () {
+          namesService.getName(candidate, false, function (existing) {
+            if (lookupId !== duplicateLookupId || candidate.toLocaleLowerCase() !== ($scope.word.word || '').trim().toLocaleLowerCase()) return;
+            $scope.form.wordInput.$setValidity('duplicateCheck', true);
+            if ((existing.word || '').toLocaleLowerCase() !== candidate.toLocaleLowerCase()) return;
+
+            $scope.form.wordInput.$setValidity('alreadyExists', false);
+            duplicateWarningToast = toastr.error('Word already exists. <a href="#/words/edit/' + encodeURIComponent(existing.key || existing.word) + '">Edit this word</a>', '', {
+              allowHtml: true, timeOut: 0, extendedTimeOut: 0, closeButton: true, tapToDismiss: false
+            });
+          }).error(function (response, status) {
+            if (lookupId !== duplicateLookupId || candidate.toLocaleLowerCase() !== ($scope.word.word || '').trim().toLocaleLowerCase()) return;
+            $scope.form.wordInput.$setValidity('duplicateCheck', true);
+            if (status === 404) $scope.form.wordInput.$setValidity('alreadyExists', true);
           });
-        }).error(function (response, status) {
-          if (status === 404) $scope.form.wordInput.$setValidity('alreadyExists', true);
-        });
+        }, 300);
       };
 
+      $scope.$on('$destroy', function () {
+        if (duplicateLookupTimeout) $timeout.cancel(duplicateLookupTimeout);
+        if (duplicateWarningToast) toastr.clear(duplicateWarningToast);
+      });
       $scope.remove_self_morphology = function () {
         var word = ($scope.word.word || '').trim().toLocaleLowerCase();
         if (!word || !$scope.word.morphology) return;
