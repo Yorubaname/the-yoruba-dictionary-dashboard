@@ -9,7 +9,8 @@
             <div class="form-group form-float">
               <div class="form-line">
                 <label for="word" class="required">Word</label>
-                <input type="text" id="word" class="form-control" ng-model="word.word" required keyboard />
+                <input type="text" id="word" name="wordInput" class="form-control" ng-model="word.word" ng-blur="new && check_duplicate()" required keyboard />
+                <span class="help-block text-danger" ng-show="form.wordInput.$error.alreadyExists">This word already exists.</span>
               </div>
             </div>
           </div>
@@ -114,7 +115,7 @@
                   <em>Oní-àfin</em>
                 </span>
                 <input type="text" id="morphology" class="form-control" ng-model="word.morphology"
-                  ng-blur="generate_glossary()" />
+                  ng-blur="remove_self_morphology(); generate_glossary()" />
               </div>
             </div>
           </div>

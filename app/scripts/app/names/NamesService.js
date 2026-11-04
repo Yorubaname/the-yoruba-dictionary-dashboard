@@ -85,6 +85,9 @@ angular.module("NamesModule").service("NamesService", [
           return fn($localStorage.entries);
         });
     };
+    this.getAllNames = function () {
+      return api.get("/v1/words", { all: true });
+    };
     this.search = function (name) {
       return api.get("/v1/search", { q: name });
     };

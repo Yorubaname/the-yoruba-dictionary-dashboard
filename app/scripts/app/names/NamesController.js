@@ -126,7 +126,33 @@ angular
       $scope.new = true;
       $scope.word = {};
 
+      $scope.check_duplicate = function () {
+        var candidate = ($scope.word.word || '').trim();
+        if (!$scope.form || !$scope.form.wordInput || !candidate) return;
+        $scope.form.wordInput.$setValidity('alreadyExists', true);
+        return namesService.getName(candidate, false, function (existing) {
+          if ((existing.word || '').toLocaleLowerCase() !== candidate.toLocaleLowerCase()) return;
+          $scope.form.wordInput.$setValidity('alreadyExists', false);
+          toastr.error('Word already exists. <a href="#/words/edit/' + encodeURIComponent(existing.key || existing.word) + '">Edit this word</a>', '', {
+            allowHtml: true, timeOut: 0, extendedTimeOut: 0, closeButton: true, tapToDismiss: false
+          });
+        }).error(function (response, status) {
+          if (status === 404) $scope.form.wordInput.$setValidity('alreadyExists', true);
+        });
+      };
+
+      $scope.remove_self_morphology = function () {
+        var word = ($scope.word.word || '').trim().toLocaleLowerCase();
+        if (!word || !$scope.word.morphology) return;
+        var parts = $scope.word.morphology.split('-');
+        var filtered = parts.filter(function (part) { return part.trim().toLocaleLowerCase() !== word; });
+        if (filtered.length !== parts.length) {
+          $scope.word.morphology = filtered.join('-');
+          toastr.warning('A word cannot contain a morphology part that points back to itself. The self-reference was removed.');
+        }
+      };
       $scope.submit = function () {
+        $scope.remove_self_morphology();
         if (!Array.isArray($scope.word.etymology) || $scope.word.etymology.length === 0) {
           return namesService.addName($scope.word, function () {
             // reset the form models fields
@@ -150,6 +176,7 @@ angular
       };
 
       $scope.generate_glossary = function () {
+        $scope.remove_self_morphology();
         generateGlossary($scope, etymologyService, namesEtymologyWorkflow, toastr);
       };
     }
@@ -171,6 +198,10 @@ angular
       });
       namesService.getName($stateParams.entry, false, function (resp) {
         $scope.word = resp;
+        $scope.statusClass = resp.state === 'PUBLISHED' ? 'label-success' :
+          resp.state === 'NEW' ? 'label-warning' :
+          resp.state === 'MODIFIED' ? 'label-info' :
+          resp.state === 'UNPUBLISHED' ? 'label-danger' : 'label-default';
         originalName = resp.key;
         
         // A word must have at least one definition
@@ -183,7 +214,18 @@ angular
         }
       });
 
+      $scope.remove_self_morphology = function () {
+        var word = ($scope.word.word || '').trim().toLocaleLowerCase();
+        if (!word || !$scope.word.morphology) return;
+        var parts = $scope.word.morphology.split('-');
+        var filtered = parts.filter(function (part) { return part.trim().toLocaleLowerCase() !== word; });
+        if (filtered.length !== parts.length) {
+          $scope.word.morphology = filtered.join('-');
+          toastr.warning('A word cannot contain a morphology part that points back to itself. The self-reference was removed.');
+        }
+      };
       $scope.generate_glossary = function () {
+        $scope.remove_self_morphology();
         generateGlossary($scope, etymologyService, namesEtymologyWorkflow, toastr);
       };
 
@@ -227,6 +269,7 @@ angular
       };
 
       $scope.submit = function () {
+        $scope.remove_self_morphology();
         if ($scope.has_unreviewed_required_definitions()) {
           toastr.warning("Please review all definitions needing review before saving.");
           return;

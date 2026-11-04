@@ -9,7 +9,7 @@
             <b>{{next.word|capitalize}}</b> &gt; </a>
     </div>
     <div class="col-xs-12" style="margin-top:20px;">
-        <div class="heading_a"><span class="heading_text">Update Word Entry: {{word.word}}</span>
+        <div class="heading_a"><span class="heading_text">Update Word Entry: {{word.word}}</span> <span class="label" ng-class="statusClass">{{word.state}}</span>
             <feedback word="{{ word.word }}"></feedback>
         </div>
     </div>
