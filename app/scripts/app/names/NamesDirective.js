@@ -495,4 +495,66 @@ angular
         }
       };
     }
+  ])
+  .directive("history", [
+    "$modal",
+    function ($modal) {
+      var MAX_EVENTS = 10;
+      var KINDS = [
+        { list: "publishers", label: "Published", css: "label-success" },
+        { list: "modifiers", label: "Modified", css: "label-info" },
+        { list: "unpublishers", label: "Unpublished", css: "label-warning" }
+      ];
+
+      // Merge the three audit lists of an entry into one timeline, newest first.
+      var buildTimeline = function (entry) {
+        var events = [];
+        KINDS.forEach(function (kind) {
+          ((entry && entry[kind.list]) || []).forEach(function (stamp) {
+            events.push({
+              action: kind.label,
+              css: kind.css,
+              by: stamp.by,
+              at: stamp.at,
+              fieldsChanged: stamp.fieldsChanged
+            });
+          });
+        });
+        return events.sort(function (a, b) {
+          return new Date(b.at) - new Date(a.at);
+        });
+      };
+
+      return {
+        restrict: "EA",
+        templateUrl: "tmpls/words/history.html",
+        link: function (scope) {
+          scope.historyEvents = [];
+          scope.$watch(function () {
+            var w = scope.word || {};
+            return [w.publishers, w.modifiers, w.unpublishers];
+          }, function () {
+            scope.historyEvents = buildTimeline(scope.word);
+          }, true);
+
+          scope.showHistory = function () {
+            $modal.open({
+              templateUrl: "tmpls/words/partials/historyModal.html",
+              size: "md",
+              controller: function ($scope, $modalInstance) {
+                $scope.modalTitle = "History of " + ((scope.word && scope.word.word) || "");
+                $scope.events = scope.historyEvents.slice(0, MAX_EVENTS);
+                $scope.total = scope.historyEvents.length;
+                $scope.counts = KINDS.map(function (kind) {
+                  return { label: kind.label, css: kind.css, count: ((scope.word && scope.word[kind.list]) || []).length };
+                });
+                $scope.cancel = function () {
+                  $modalInstance.dismiss("cancel");
+                };
+              }
+            });
+          };
+        }
+      };
+    }
   ]);
