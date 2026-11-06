@@ -525,16 +525,31 @@ angular
         });
       };
 
+      // The creation event, always shown last (oldest). Words created before the audit trail
+      // have no field count, and very old ones may not have a creator recorded.
+      var buildCreated = function (entry) {
+        if (!entry || !entry.createdAt) return null;
+        return {
+          action: "Created",
+          css: "label-primary",
+          by: entry.submittedBy,
+          at: entry.createdAt,
+          fieldsChanged: entry.createdFieldsCount
+        };
+      };
+
       return {
         restrict: "EA",
         templateUrl: "tmpls/words/history.html",
         link: function (scope) {
           scope.historyEvents = [];
+          scope.createdEvent = null;
           scope.$watch(function () {
             var w = scope.word || {};
-            return [w.publishers, w.modifiers, w.unpublishers];
+            return [w.publishers, w.modifiers, w.unpublishers, w.createdAt, w.submittedBy, w.createdFieldsCount];
           }, function () {
             scope.historyEvents = buildTimeline(scope.word);
+            scope.createdEvent = buildCreated(scope.word);
           }, true);
 
           scope.showHistory = function () {
@@ -543,8 +558,10 @@ angular
               size: "md",
               controller: function ($scope, $modalInstance) {
                 $scope.modalTitle = "History of " + ((scope.word && scope.word.word) || "");
+                // Latest events first; the creation event is pinned at the bottom even when truncated.
                 $scope.events = scope.historyEvents.slice(0, MAX_EVENTS);
                 $scope.total = scope.historyEvents.length;
+                $scope.created = scope.createdEvent;
                 $scope.counts = KINDS.map(function (kind) {
                   return { label: kind.label, css: kind.css, count: ((scope.word && scope.word[kind.list]) || []).length };
                 });

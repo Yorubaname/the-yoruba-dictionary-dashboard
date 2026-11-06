@@ -17,9 +17,18 @@
                 <td>{{e.at | date:'medium'}}</td>
                 <td>{{ e.fieldsChanged === null || e.fieldsChanged === undefined ? '—' : e.fieldsChanged }}</td>
             </tr>
+            <tr ng-if="total > events.length" class="history-gap">
+                <td colspan="4" class="text-center text-muted"><small>⋯ {{total - events.length}} older events not shown ⋯</small></td>
+            </tr>
+            <tr ng-if="created" class="history-created">
+                <td><span class="label" ng-class="created.css">{{created.action}}</span></td>
+                <td>{{created.by || '—'}}</td>
+                <td>{{created.at | date:'medium'}}</td>
+                <td>{{ created.fieldsChanged === null || created.fieldsChanged === undefined ? '—' : created.fieldsChanged }}</td>
+            </tr>
         </tbody>
     </table>
-    <p class="text-muted" ng-show="total > events.length"><small>Showing the latest {{events.length}} of {{total}} events.</small></p>
+    <p class="text-muted" ng-show="total > events.length"><small>Showing the latest {{events.length}} of {{total}} events, plus when the word was created.</small></p>
 </div>
 <div class="modal-footer">
     <button type="button" class="btn btn-default btn-sm" ng-click="cancel()">Close</button>
