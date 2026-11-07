@@ -67,8 +67,8 @@
                     <th>Syllables</th>
                     <th>Status</th>
                     <th ng-show="isAdmin || isLexicographer">Actions</th>
-                    <th><a href="" ng-click="sortByDate('createdAt')">Creator</a></th>
-                    <th><a href="" ng-click="sortByDate('updatedAt')">Last Editor</a></th>
+                    <th><a href="" ng-click="sortByDate('createdAt')">Created</a></th>
+                    <th><a href="" ng-click="sortByDate('updatedAt')">Edited</a></th>
                 </tr>
             </thead>
             <tbody>
@@ -93,12 +93,12 @@
                         </a>
                     </td>
                     <td>
-                        {{entry.submittedBy}}
-                        <small class="text-muted">({{entry.createdAt|date:'yyyy-MM-dd'}})</small>
+                        {{entry.createdAt|date:'yyyy-MM-dd'}}
+                        <small class="text-muted" ng-if="entry.submittedBy">({{entry.submittedBy}})</small>
                     </td>
                     <td>
-                        {{lastEditedBy(entry)}}
-                        <small class="text-muted">({{entry.updatedAt|date:'yyyy-MM-dd'}})</small>
+                        {{entry.updatedAt|date:'yyyy-MM-dd'}}
+                        <small class="text-muted" ng-if="lastEditedBy(entry)">({{lastEditedBy(entry)}})</small>
                     </td>
                 </tr>
             </tbody>
