@@ -27,6 +27,23 @@
 
 </div>
 
+<div class="row" ng-if="status != 'suggested'">
+    <div class="col-sm-4">
+        <label for="filter-creator">Creator</label>
+        <input id="filter-creator" ng-model="listFilters.submittedBy" type="text" class="form-control input-sm"
+            placeholder="Filter by creator">
+    </div>
+    <div class="col-sm-4">
+        <label for="filter-last-edited-by">Last Edited By</label>
+        <input id="filter-last-edited-by" ng-model="listFilters.lastUpdatedBy" type="text"
+            class="form-control input-sm" placeholder="Filter by last editor">
+    </div>
+    <div class="col-sm-2">
+        <label>&nbsp;</label>
+        <button class="btn btn-sm btn-info form-control" ng-click="applyListFilters()">Apply filters</button>
+    </div>
+</div>
+
 <div class="row">
 
     <div class="col-md-12" ng-if="status != 'suggested'">
@@ -48,11 +65,12 @@
                         </span>
                     </th>
                     <th>Syllables</th>
-                    <th>Geolocation</th>
                     <th>Status</th>
                     <th ng-show="isAdmin || isLexicographer">Actions</th>
-                    <th>Submitted By</th>
-                    <th>Date</th>
+                    <th>Creator</th>
+                    <th>Last Edited By</th>
+                    <th><a href="" ng-click="sortByDate('createdAt')">Created</a></th>
+                    <th><a href="" ng-click="sortByDate('updatedAt')">Last Updated</a></th>
                 </tr>
             </thead>
             <tbody>
@@ -68,7 +86,6 @@
                         </a>
                     </td>
                     <td>{{entry.syllables}}</td>
-                    <td>{{entry.geoLocation|list}}</td>
                     <td>{{entry.state}}</td>
                     <td ng-show="(isAdmin || isLexicographer)">
                         <a ng-show="entry.state != 'SUGGESTED'" class="btn btn-xs"
@@ -78,7 +95,9 @@
                         </a>
                     </td>
                     <td>{{entry.submittedBy}}</td>
-                    <td>{{entry.createdAt|toDateString}}</td>
+                    <td>{{lastEditedBy(entry)}}</td>
+                    <td>{{entry.createdAt|date:'yyyy-MM-dd'}}</td>
+                    <td>{{entry.updatedAt|date:'yyyy-MM-dd'}}</td>
                 </tr>
             </tbody>
             <tfoot>
@@ -86,13 +105,13 @@
                     <td colspan="2">
                         <select-all-checkbox checkboxes="wordsList"></select-all-checkbox> Select all words
                     </td>
-                    <td colspan="6">Show
+                    <td colspan="7">Show
                         <select ng-model="count" ng-options="n for n in [ 10, 20, 50, 100, 250, 500 ]"
                             ng-change="fetch(1, count)"></select> words
                     </td>
                 </tr>
                 <tr>
-                    <td colspan="8" class="text-center">
+                    <td colspan="9" class="text-center">
                         <dir-pagination-controls max-size="12" direction-links="true" boundary-links="true"
                             on-page-change="fetch(newPageNumber, count)">
                         </dir-pagination-controls>
@@ -128,7 +147,6 @@
                         </span>
                     </th>
                     <th>Details</th>
-                    <th>Geolocation</th>
                     <th>Suggested By</th>
                     <th>Action</th>
                 </tr>
@@ -144,7 +162,6 @@
                         <strong>{{entry.word}}</strong>
                     </td>
                     <td>{{entry.meaning}}</td>
-                    <td>{{entry.geoLocation|list}}</td>
                     <td>{{entry.submittedBy}}</td>
                     <td>
                         <a class="btn btn-xs btn-success" ng-click="accept(entry)">Accept Word</a>
@@ -157,13 +174,13 @@
                     <td colspan="2">
                         <select-all-checkbox checkboxes="wordsList"></select-all-checkbox> Select all suggested words
                     </td>
-                    <td colspan="4">Show
+                    <td colspan="3">Show
                         <select ng-model="count" ng-options="n for n in [ 10, 20, 50, 100, 250, 500 ]"
                             ng-change="fetch(1, count)"></select> words
                     </td>
                 </tr>
                 <tr>
-                    <td colspan="6">
+                    <td colspan="5">
                         <dir-pagination-controls max-size="12" direction-links="true" boundary-links="true"
                             on-page-change="fetch(newPageNumber)">
                         </dir-pagination-controls>
