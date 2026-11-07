@@ -64,7 +64,6 @@
                                 ng-class="{'glyphicon-chevron-up':reverse,'glyphicon-chevron-down':!reverse}"></i>
                         </span>
                     </th>
-                    <th>Syllables</th>
                     <th>Status</th>
                     <th ng-show="isAdmin || isLexicographer">Actions</th>
                     <th><a href="" ng-click="sortByDate('createdAt')">Created</a></th>
@@ -83,7 +82,6 @@
                             <strong>{{entry.word}}</strong>
                         </a>
                     </td>
-                    <td>{{entry.syllables}}</td>
                     <td>{{entry.state}}</td>
                     <td ng-show="(isAdmin || isLexicographer)">
                         <a ng-show="entry.state != 'SUGGESTED'" class="btn btn-xs"
@@ -107,13 +105,13 @@
                     <td colspan="2">
                         <select-all-checkbox checkboxes="wordsList"></select-all-checkbox> Select all words
                     </td>
-                    <td colspan="5">Show
+                    <td colspan="4">Show
                         <select ng-model="count" ng-options="n for n in [ 10, 20, 50, 100, 250, 500 ]"
                             ng-change="fetch(1, count)"></select> words
                     </td>
                 </tr>
                 <tr>
-                    <td colspan="7" class="text-center">
+                    <td colspan="6" class="text-center">
                         <dir-pagination-controls max-size="12" direction-links="true" boundary-links="true"
                             on-page-change="fetch(newPageNumber, count)">
                         </dir-pagination-controls>
