@@ -368,6 +368,7 @@ angular
       };
       $scope.sortByDate = function (orderBy) {
         $scope.sortKey = null;
+        $scope.reverse = false;
         $scope.orderBy = orderBy;
         $scope.fetch(1, $scope.count);
       };
