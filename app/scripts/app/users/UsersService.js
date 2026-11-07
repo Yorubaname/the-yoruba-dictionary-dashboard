@@ -33,8 +33,8 @@ angular.module('UsersModule').service('usersService', [
         return fn(resp.totalUsers);
       });
     };
-    this.getUsers = function (params) {
-      return api.get('/v1/auth/users', params);
+    this.getUsers = function () {
+      return api.get('/v1/auth/users');
     };
     this.deleteUser = function (user, fn) {
       return api.deleteJson('/v1/auth/users/' + user.email, user).success(function () {

@@ -5,27 +5,17 @@ angular.module('UsersModule').controller('userListCtrl', [
   '$scope',
   'usersService',
   '$window',
-  '$stateParams',
-  function ($scope, api, $window, $stateParams) {
+  function ($scope, api, $window) {
     $scope.usersList = [];
-    $scope.count = 50;
     $scope.pagination = { current: 1 };
     $scope.sort = function (keyname) {
       $scope.sortKey = keyname;
       //set the sortKey to the param passed
       $scope.reverse = !$scope.reverse;  //if true make it false and vice versa
     };
-    api.countUsers(function (num) {
-      $scope.usersListItems = num || 50;
-    });
-    $scope.fetch = function (newPageNumber) {
-      return api.getUsers({
-        role: $stateParams.role,
-        page: newPageNumber || 1,
-        count: 50
-      }).success(function (response) {
+    $scope.fetch = function () {
+      return api.getUsers().success(function (response) {
         $scope.usersList = [];
-        $scope.pagination.current = newPageNumber || 1;
         response.forEach(function (user) {
           $scope.usersList.push(user);
         });

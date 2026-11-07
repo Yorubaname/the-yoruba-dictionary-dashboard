@@ -32,7 +32,7 @@
                 </tr>
             </thead>
             <tbody>
-                <tr dir-paginate="user in usersList|orderBy:sortKey:reverse|filter:search|itemsPerPage:50" total-items="usersListItems" current-page="pagination.current" ng-class="user.isSelected ? 'bg-info' : '' ">
+                <tr dir-paginate="user in usersList|orderBy:sortKey:reverse|filter:search|itemsPerPage:50" current-page="pagination.current" ng-class="user.isSelected ? 'bg-info' : '' ">
                     <!--td><input type="checkbox" value="{{$index}}" ng-model="user.isSelected" name="selected_name"> {{user.username}}</td-->
                     <td><strong>{{user.email}}</strong></td>
                     <td>{{user.roles | commaSeparated}}</td>
@@ -51,7 +51,7 @@
                         <dir-pagination-controls
                             max-size="12"
                             direction-links="true"
-                            boundary-links="true"  on-page-change="fetch(newPageNumber)">
+                            boundary-links="true">
                         </dir-pagination-controls>
                     </td>
                 </tr>

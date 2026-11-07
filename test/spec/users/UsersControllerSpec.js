@@ -8,16 +8,17 @@ describe('Module: UsersModule: Controller: userListCtrl', function () {
     angular.mock.module('UsersModule');
     angular.mock.inject(function ($rootScope, $controller) {
       $scope = $rootScope.$new();
+      var users = [];
+      for (var i = 0; i < 51; i++) {
+        users.push({email: 'user' + i + '@example.com'});
+      }
       usersService = {
-        countUsers: function (callback) {
-          callback(1);
-        },
         getUsers: function () {}
       };
       spyOn(usersService, 'getUsers').and.callFake(function () {
         return {
           success: function (callback) {
-            callback([{email: 'user@example.com'}]);
+            callback(users);
             return this;
           }
         };
@@ -26,27 +27,16 @@ describe('Module: UsersModule: Controller: userListCtrl', function () {
       $controller('userListCtrl', {
         $scope: $scope,
         usersService: usersService,
-        $window: {},
-        $stateParams: {role: 'all'}
+        $window: {}
       });
     });
   });
 
-  it('requests users for the selected role and page', function () {
-    expect(usersService.getUsers).toHaveBeenCalledWith({
-      role: 'all',
-      page: 1,
-      count: 50
-    });
-    expect($scope.usersList.length).toBe(1);
-
-    $scope.fetch(2);
-
-    expect(usersService.getUsers).toHaveBeenCalledWith({
-      role: 'all',
-      page: 2,
-      count: 50
-    });
-    expect($scope.pagination.current).toBe(2);
+  it('loads the full user list for client-side pagination', function () {
+    expect(usersService.getUsers.calls.count()).toBe(1);
+    expect(usersService.getUsers).toHaveBeenCalledWith();
+    expect($scope.usersList.length).toBe(51);
+    expect($scope.usersList[50].email).toBe('user50@example.com');
+    expect($scope.pagination.current).toBe(1);
   });
 });
