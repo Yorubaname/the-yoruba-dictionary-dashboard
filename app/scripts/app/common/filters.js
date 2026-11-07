@@ -67,6 +67,12 @@ angular.module('CommonModule')  /**
     // input will be the string we pass in if (input)
     return input[0].toUpperCase() + input.slice(1).toLowerCase();
   };
+}).filter('commaSeparated', function () {
+  return function (input) {
+    if (Array.isArray(input))
+      return input.join(', ');
+    return input;
+  };
 })  /**
  * Filter to parse input value array to comma separated list
  */.filter('list', [
