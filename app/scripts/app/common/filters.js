@@ -37,7 +37,30 @@ angular.module('CommonModule')  /**
       return $filter('date')(date, 'mediumDate');
     };
   }
-]).filter('capitalize', function () {
+]).filter('timeAgo', function () {
+  // Relative time for an ISO date string, e.g. "just now", "5m ago", "3h ago", "2d ago".
+  return function (input) {
+    if (!input)
+      return '—';
+    var seconds = Math.max(0, (Date.now() - new Date(input).getTime()) / 1000);
+    if (isNaN(seconds))
+      return '—';
+    if (seconds < 60)
+      return 'just now';
+    var units = [['d', 86400], ['h', 3600], ['m', 60]];
+    for (var i = 0; i < units.length; i++) {
+      if (seconds >= units[i][1])
+        return Math.floor(seconds / units[i][1]) + units[i][0] + ' ago';
+    }
+  };
+}).filter('isRecent', function () {
+  // True when the ISO date string is within the given number of minutes (default 15).
+  return function (input, minutes) {
+    if (!input)
+      return false;
+    return Date.now() - new Date(input).getTime() < (minutes || 15) * 60000;
+  };
+}).filter('capitalize', function () {
   return function (input) {
     if (!input)
       return;
