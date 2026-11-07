@@ -34,7 +34,7 @@
             placeholder="Filter by creator">
     </div>
     <div class="col-sm-4">
-        <label for="filter-last-edited-by">Last Edited By</label>
+        <label for="filter-last-edited-by">Last Editor</label>
         <input id="filter-last-edited-by" ng-model="listFilters.lastUpdatedBy" type="text"
             class="form-control input-sm" placeholder="Filter by last editor">
     </div>
@@ -67,10 +67,8 @@
                     <th>Syllables</th>
                     <th>Status</th>
                     <th ng-show="isAdmin || isLexicographer">Actions</th>
-                    <th>Creator</th>
-                    <th>Last Edited By</th>
-                    <th><a href="" ng-click="sortByDate('createdAt')">Created</a></th>
-                    <th><a href="" ng-click="sortByDate('updatedAt')">Last Updated</a></th>
+                    <th><a href="" ng-click="sortByDate('createdAt')">Creator</a></th>
+                    <th><a href="" ng-click="sortByDate('updatedAt')">Last Editor</a></th>
                 </tr>
             </thead>
             <tbody>
@@ -94,10 +92,14 @@
                             {{entry.state == 'PUBLISHED' ? 'Unpublish' : 'Publish'}}
                         </a>
                     </td>
-                    <td>{{entry.submittedBy}}</td>
-                    <td>{{lastEditedBy(entry)}}</td>
-                    <td>{{entry.createdAt|date:'yyyy-MM-dd'}}</td>
-                    <td>{{entry.updatedAt|date:'yyyy-MM-dd'}}</td>
+                    <td>
+                        {{entry.submittedBy}}
+                        <small class="text-muted">({{entry.createdAt|date:'yyyy-MM-dd'}})</small>
+                    </td>
+                    <td>
+                        {{lastEditedBy(entry)}}
+                        <small class="text-muted">({{entry.updatedAt|date:'yyyy-MM-dd'}})</small>
+                    </td>
                 </tr>
             </tbody>
             <tfoot>
@@ -105,13 +107,13 @@
                     <td colspan="2">
                         <select-all-checkbox checkboxes="wordsList"></select-all-checkbox> Select all words
                     </td>
-                    <td colspan="7">Show
+                    <td colspan="5">Show
                         <select ng-model="count" ng-options="n for n in [ 10, 20, 50, 100, 250, 500 ]"
                             ng-change="fetch(1, count)"></select> words
                     </td>
                 </tr>
                 <tr>
-                    <td colspan="9" class="text-center">
+                    <td colspan="7" class="text-center">
                         <dir-pagination-controls max-size="12" direction-links="true" boundary-links="true"
                             on-page-change="fetch(newPageNumber, count)">
                         </dir-pagination-controls>
