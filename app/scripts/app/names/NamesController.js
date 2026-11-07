@@ -348,13 +348,20 @@ angular
       namesService.countNames($stateParams.status, function (num) {
         $scope.wordsListItems = num;
       });
-      $scope.lastEditedBy = function (entry) {
+      var latestModifier = function (entry) {
         var modifiers = entry && entry.modifiers || [];
-        var latestModifier = modifiers.reduce(function (latest, modifier) {
+        return modifiers.reduce(function (latest, modifier) {
           if (!modifier || !modifier.at) return latest;
           return !latest || new Date(modifier.at) > new Date(latest.at) ? modifier : latest;
         }, null);
-        return latestModifier && latestModifier.by || entry && entry.updatedBy || "";
+      };
+      $scope.lastEditedBy = function (entry) {
+        var modifier = latestModifier(entry);
+        return modifier && modifier.by || entry && entry.updatedBy || "";
+      };
+      $scope.lastEditedAt = function (entry) {
+        var modifier = latestModifier(entry);
+        return modifier && modifier.at || entry && entry.updatedAt;
       };
       $scope.sortByDate = function (orderBy) {
         $scope.orderBy = orderBy;

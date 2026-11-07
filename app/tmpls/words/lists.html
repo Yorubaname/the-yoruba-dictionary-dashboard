@@ -95,7 +95,7 @@
                         <small class="text-muted" ng-if="entry.submittedBy">({{entry.submittedBy}})</small>
                     </td>
                     <td>
-                        {{entry.updatedAt|date:'yyyy-MM-dd'}}
+                        {{lastEditedAt(entry)|date:'yyyy-MM-dd'}}
                         <small class="text-muted" ng-if="lastEditedBy(entry)">({{lastEditedBy(entry)}})</small>
                     </td>
                 </tr>
