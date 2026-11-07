@@ -334,22 +334,76 @@ angular
       $scope.wordsList = [];
       $scope.status = $stateParams.status;
       $scope.count = 50;
+      $scope.orderBy = "updatedAt";
+      $scope.listFilters = {
+        submittedBy: "",
+        lastUpdatedBy: ""
+      };
       $scope.pagination = { current: 1 };
       $scope.sort = function (keyname) {
+        if ($scope.sortKey === keyname) {
+          $scope.reverse = !$scope.reverse;
+        } else {
+          $scope.reverse = true;
+        }
         $scope.sortKey = keyname;
-        //set the sortKey to the param passed
-        $scope.reverse = !$scope.reverse; //if true make it false and vice versa
       };
       namesService.countNames($stateParams.status, function (num) {
         $scope.wordsListItems = num;
       });
+      var latestModifier = function (entry) {
+        var modifiers = entry && entry.modifiers || [];
+        return modifiers.reduce(function (latest, modifier) {
+          if (!modifier || !modifier.at) return latest;
+          return !latest || new Date(modifier.at) > new Date(latest.at) ? modifier : latest;
+        }, null);
+      };
+      $scope.lastEditedBy = function (entry) {
+        var modifier = latestModifier(entry);
+        return modifier && modifier.by || entry && entry.updatedBy || "";
+      };
+      $scope.lastEditedAt = function (entry) {
+        var modifier = latestModifier(entry);
+        return modifier && modifier.at || entry && entry.updatedAt;
+      };
+      $scope.sortByDate = function (orderBy) {
+        $scope.sortKey = null;
+        $scope.reverse = false;
+        $scope.orderBy = orderBy;
+        $scope.fetch(1, $scope.count);
+      };
+      $scope.refreshListCount = function () {
+        var filters = { status: $stateParams.status };
+        if ($scope.listFilters.submittedBy) filters.submittedBy = $scope.listFilters.submittedBy;
+        if ($scope.listFilters.lastUpdatedBy) filters.lastUpdatedBy = $scope.listFilters.lastUpdatedBy;
+        namesService.countFilteredNames(filters, function (count) {
+          $scope.wordsListItems = count;
+        });
+      };
+      $scope.applyListFilters = function () {
+        $scope.refreshListCount();
+        $scope.fetch(1, $scope.count);
+      };
+      $scope.clearFilters = function () {
+        $scope.search = "";
+        $scope.listFilters.submittedBy = "";
+        $scope.listFilters.lastUpdatedBy = "";
+        namesService.countNames($stateParams.status, function (count) {
+          $scope.wordsListItems = count;
+        });
+        $scope.fetch(1, $scope.count);
+      };
       $scope.fetch = function (newPageNumber, count) {
+        var filters = {
+          status: $stateParams.status,
+          page: newPageNumber || 1,
+          count: count || $scope.itemsPerPage || $scope.count || 50,
+          orderBy: $scope.orderBy
+        };
+        if ($scope.listFilters.submittedBy) filters.submittedBy = $scope.listFilters.submittedBy;
+        if ($scope.listFilters.lastUpdatedBy) filters.lastUpdatedBy = $scope.listFilters.lastUpdatedBy;
         return namesService
-          .getNames({
-            status: $stateParams.status,
-            page: newPageNumber || 1,
-            count: count || $scope.itemsPerPage || $scope.count || 50
-          })
+          .getNames(filters)
           .success(function (responseData) {
             $scope.wordsList = [];
             $scope.pagination.current = newPageNumber || 1;

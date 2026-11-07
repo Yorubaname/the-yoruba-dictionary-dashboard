@@ -215,7 +215,7 @@ angular.module("NamesModule").service("NamesService", [
       filter = !isEmptyObj(filter) ? filter : {};
       filter.page = filter.page || 1;
       filter.count = filter.count || 50;
-      filter.orderBy = "createdAt";
+      filter.orderBy = filter.orderBy || "updatedAt";
       if (filter.status === "suggested") return api.get("/v1/words/suggestions");
       else if (filter.status === "published") filter.state = "PUBLISHED";
       else if (filter.status === "unpublished") filter.state = "NEW";
@@ -233,6 +233,15 @@ angular.module("NamesModule").service("NamesService", [
         else if (status === "suggested") return fn(resp.totalSuggestedWords);
         else if (status === "all") return fn(resp.totalNames);
         else return fn(resp);
+      });
+    };
+    this.countFilteredNames = function (filter, fn) {
+      if (filter.status === "published") filter.state = "PUBLISHED";
+      else if (filter.status === "unpublished") filter.state = "NEW";
+      else if (filter.status === "modified") filter.state = "MODIFIED";
+      delete filter.status;
+      return api.get("/v1/words/count", filter).success(function (response) {
+        return fn(response.totalCount);
       });
     };
     this.getRecentlyIndexedNames = function (fn) {
