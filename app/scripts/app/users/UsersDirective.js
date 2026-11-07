@@ -29,7 +29,7 @@ angular.module('UsersModule')  // Directive adds user roles the User Form
           // Callback on submit
           scope.submit = function () {
             scope.user.roles = [scope.role];
-            if (!$stateParams.email)
+            if ($stateParams.email === undefined)
               return api.addUser(scope.user);
             else
               return api.updateUser(scope.user);

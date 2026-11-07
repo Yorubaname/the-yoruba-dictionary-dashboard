@@ -5,7 +5,8 @@ angular.module('UsersModule').controller('userListCtrl', [
   '$scope',
   'usersService',
   '$window',
-  function ($scope, api, $window) {
+  '$stateParams',
+  function ($scope, api, $window, $stateParams) {
     $scope.usersList = [];
     $scope.count = 50;
     $scope.pagination = { current: 1 };
@@ -19,10 +20,12 @@ angular.module('UsersModule').controller('userListCtrl', [
     });
     $scope.fetch = function (newPageNumber) {
       return api.getUsers({
+        role: $stateParams.role,
         page: newPageNumber || 1,
         count: 50
       }).success(function (response) {
         $scope.usersList = [];
+        $scope.pagination.current = newPageNumber || 1;
         response.forEach(function (user) {
           $scope.usersList.push(user);
         });
