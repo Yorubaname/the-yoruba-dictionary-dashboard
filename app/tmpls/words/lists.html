@@ -29,14 +29,14 @@
 
 <div class="row" ng-if="status != 'suggested'">
     <div class="col-sm-4">
-        <label for="filter-creator">Creator</label>
+        <label for="filter-creator">Creator email address</label>
         <input id="filter-creator" ng-model="listFilters.submittedBy" type="text" class="form-control input-sm"
-            placeholder="Filter by creator">
+            placeholder="Filter by creator email">
     </div>
     <div class="col-sm-4">
-        <label for="filter-last-edited-by">Last Editor</label>
+        <label for="filter-last-edited-by">Last Editor email address</label>
         <input id="filter-last-edited-by" ng-model="listFilters.lastUpdatedBy" type="text"
-            class="form-control input-sm" placeholder="Filter by last editor">
+            class="form-control input-sm" placeholder="Filter by last editor email">
     </div>
     <div class="col-sm-2">
         <label>&nbsp;</label>
@@ -58,16 +58,29 @@
                     <th ng-hide="isBasic">
                         <select-all-checkbox checkboxes="wordsList"></select-all-checkbox>
                     </th>
-                    <th>Word
-                        <span ng-click="sort('word')" class="badge badge-default pull-right">
-                            <i class="glyphicon sort-icon"
-                                ng-class="{'glyphicon-chevron-up':reverse,'glyphicon-chevron-down':!reverse}"></i>
-                        </span>
+                    <th ng-attr-aria-sort="{{sortKey === 'word' ? (reverse ? 'descending' : 'ascending') : 'none'}}">
+                        <a href="" ng-click="sort('word')" title="Sort by word">Word
+                            <span class="glyphicon sort-icon"
+                                ng-class="sortKey === 'word' ? (reverse ? 'glyphicon-chevron-down' : 'glyphicon-chevron-up') : 'glyphicon-sort'"
+                                aria-hidden="true"></span>
+                        </a>
                     </th>
                     <th>Status</th>
                     <th ng-show="isAdmin || isLexicographer">Actions</th>
-                    <th><a href="" ng-click="sortByDate('createdAt')">Created</a></th>
-                    <th><a href="" ng-click="sortByDate('updatedAt')">Edited</a></th>
+                    <th ng-attr-aria-sort="{{!sortKey && orderBy === 'createdAt' ? 'descending' : 'none'}}">
+                        <a href="" ng-click="sortByDate('createdAt')" title="Sort by created date">Created
+                            <span class="glyphicon sort-icon"
+                                ng-class="!sortKey && orderBy === 'createdAt' ? 'glyphicon-chevron-down' : 'glyphicon-sort'"
+                                aria-hidden="true"></span>
+                        </a>
+                    </th>
+                    <th ng-attr-aria-sort="{{!sortKey && orderBy === 'updatedAt' ? 'descending' : 'none'}}">
+                        <a href="" ng-click="sortByDate('updatedAt')" title="Sort by edited date">Edited
+                            <span class="glyphicon sort-icon"
+                                ng-class="!sortKey && orderBy === 'updatedAt' ? 'glyphicon-chevron-down' : 'glyphicon-sort'"
+                                aria-hidden="true"></span>
+                        </a>
+                    </th>
                 </tr>
             </thead>
             <tbody>

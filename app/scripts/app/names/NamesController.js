@@ -341,9 +341,12 @@ angular
       };
       $scope.pagination = { current: 1 };
       $scope.sort = function (keyname) {
+        if ($scope.sortKey === keyname) {
+          $scope.reverse = !$scope.reverse;
+        } else {
+          $scope.reverse = true;
+        }
         $scope.sortKey = keyname;
-        //set the sortKey to the param passed
-        $scope.reverse = !$scope.reverse; //if true make it false and vice versa
       };
       namesService.countNames($stateParams.status, function (num) {
         $scope.wordsListItems = num;
@@ -364,6 +367,7 @@ angular
         return modifier && modifier.at || entry && entry.updatedAt;
       };
       $scope.sortByDate = function (orderBy) {
+        $scope.sortKey = null;
         $scope.orderBy = orderBy;
         $scope.fetch(1, $scope.count);
       };
