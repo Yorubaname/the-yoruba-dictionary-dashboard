@@ -510,7 +510,7 @@ angular
       var buildTimeline = function (entry) {
         var events = [];
         KINDS.forEach(function (kind) {
-          ((entry && entry[kind.list]) || []).forEach(function (stamp) {
+          (entry && entry[kind.list] || []).forEach(function (stamp) {
             events.push({
               action: kind.label,
               css: kind.css,
@@ -557,13 +557,13 @@ angular
               templateUrl: "tmpls/words/partials/historyModal.html",
               size: "md",
               controller: function ($scope, $modalInstance) {
-                $scope.modalTitle = "History of " + ((scope.word && scope.word.word) || "");
+                $scope.modalTitle = "History of " + (scope.word && scope.word.word || "");
                 // Latest events first; the creation event is pinned at the bottom even when truncated.
                 $scope.events = scope.historyEvents.slice(0, MAX_EVENTS);
                 $scope.total = scope.historyEvents.length;
                 $scope.created = scope.createdEvent;
                 $scope.counts = KINDS.map(function (kind) {
-                  return { label: kind.label, css: kind.css, count: ((scope.word && scope.word[kind.list]) || []).length };
+                  return { label: kind.label, css: kind.css, count: (scope.word && scope.word[kind.list] || []).length };
                 });
                 $scope.cancel = function () {
                   $modalInstance.dismiss("cancel");
