@@ -406,26 +406,40 @@ angular
         $scope.refreshListCount();
         $scope.fetch(1);
       };
-      $scope.changePageSize = function () {
-        $scope.fetch(1);
-      };
+      // dir-paginate calls on-page-change whenever pagination.current changes, not only on clicks,
+      // and again when the page size changes. So: set the page as the request goes out (never
+      // from a response), drop a request identical to one still in flight, and render only the
+      // latest request's response so a slow earlier page can't overwrite the one asked for last.
+      // A page-size change reaches fetch through dir-paginate's own watcher with the old page
+      // number, so a changed size always restarts at page 1.
+      var latestRequestId = 0;
+      var inFlightKey = null;
+      var lastPageSize = $scope.pagination.itemsPerPage;
       $scope.fetch = function (newPageNumber) {
+        var page = newPageNumber || 1;
+        if ($scope.pagination.itemsPerPage !== lastPageSize) page = 1;
+        lastPageSize = $scope.pagination.itemsPerPage;
         var filters = {
           status: $stateParams.status,
-          page: newPageNumber || 1,
+          page: page,
           count: $scope.pagination.itemsPerPage,
           orderBy: $scope.orderBy
         };
         if ($scope.listFilters.submittedBy) filters.submittedBy = $scope.listFilters.submittedBy;
         if ($scope.listFilters.lastUpdatedBy) filters.lastUpdatedBy = $scope.listFilters.lastUpdatedBy;
+        var key = angular.toJson(filters);
+        if (key === inFlightKey) return;
+        inFlightKey = key;
+        var requestId = ++latestRequestId;
+        $scope.pagination.current = page;
         return namesService
           .getNames(filters)
           .success(function (responseData) {
-            $scope.wordsList = [];
-            $scope.pagination.current = newPageNumber || 1;
-            responseData.forEach(function (name) {
-              $scope.wordsList.push(name);
-            });
+            if (requestId !== latestRequestId) return;
+            $scope.wordsList = responseData;
+          })
+          .finally(function () {
+            if (requestId === latestRequestId) inFlightKey = null;
           });
       };
       $scope.refreshListCount();
