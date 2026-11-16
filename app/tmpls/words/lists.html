@@ -84,7 +84,7 @@
                 </tr>
             </thead>
             <tbody>
-                <tr dir-paginate="entry in wordsList|orderBy:sortKey:reverse|filter:search|itemsPerPage:count"
+                <tr dir-paginate="entry in wordsList|orderBy:sortKey:reverse|filter:search|itemsPerPage:pagination.itemsPerPage"
                     total-items="wordsListItems" current-page="pagination.current"
                     ng-class="entry.isSelected ? 'bg-info' : '' ">
                     <td ng-hide="isBasic">
@@ -119,14 +119,13 @@
                         <select-all-checkbox checkboxes="wordsList"></select-all-checkbox> Select all words
                     </td>
                     <td colspan="4">Show
-                        <select ng-model="count" ng-options="n for n in [ 10, 20, 50, 100, 250, 500 ]"
-                            ng-change="fetch(1, count)"></select> words
+                        <select ng-model="pagination.itemsPerPage" ng-options="n for n in pageSizes"></select> words
                     </td>
                 </tr>
                 <tr>
                     <td colspan="6" class="text-center">
                         <dir-pagination-controls max-size="12" direction-links="true" boundary-links="true"
-                            on-page-change="fetch(newPageNumber, count)">
+                            on-page-change="fetch(newPageNumber)">
                         </dir-pagination-controls>
                     </td>
                 </tr>
@@ -165,7 +164,7 @@
                 </tr>
             </thead>
             <tbody>
-                <tr dir-paginate="entry in wordsList|orderBy:sortKey:reverse|filter:search|itemsPerPage:count"
+                <tr dir-paginate="entry in wordsList|orderBy:sortKey:reverse|filter:search|itemsPerPage:pagination.itemsPerPage"
                     total-items="wordsListItems" current-page="pagination.current" on-last-repeat
                     ng-class="entry.isSelected ? 'bg-info' : '' ">
                     <td>
@@ -188,8 +187,7 @@
                         <select-all-checkbox checkboxes="wordsList"></select-all-checkbox> Select all suggested words
                     </td>
                     <td colspan="3">Show
-                        <select ng-model="count" ng-options="n for n in [ 10, 20, 50, 100, 250, 500 ]"
-                            ng-change="fetch(1, count)"></select> words
+                        <select ng-model="pagination.itemsPerPage" ng-options="n for n in pageSizes"></select> words
                     </td>
                 </tr>
                 <tr>

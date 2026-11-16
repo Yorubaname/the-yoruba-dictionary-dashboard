@@ -330,16 +330,20 @@ angular
     "$stateParams",
     "$window",
     "toastr",
-    function ($scope, namesService, $stateParams, $window, toastr) {
+    "$q",
+    function ($scope, namesService, $stateParams, $window, toastr, $q) {
       $scope.wordsList = [];
       $scope.status = $stateParams.status;
-      $scope.count = 50;
       $scope.orderBy = "updatedAt";
       $scope.listFilters = {
         submittedBy: "",
         lastUpdatedBy: ""
       };
-      $scope.pagination = { current: 1 };
+      // Page state lives on an object so the "Show N words" select (inside an ng-if child scope)
+      // and the pager write to the same values the controller reads.
+      // Page sizes stay within the API's Words:MaxListCount (300).
+      $scope.pageSizes = [10, 20, 50, 100, 250];
+      $scope.pagination = { current: 1, itemsPerPage: 50 };
       $scope.sort = function (keyname) {
         if ($scope.sortKey === keyname) {
           $scope.reverse = !$scope.reverse;
@@ -348,9 +352,6 @@ angular
         }
         $scope.sortKey = keyname;
       };
-      namesService.countNames($stateParams.status, function (num) {
-        $scope.wordsListItems = num;
-      });
       var latestModifier = function (entry) {
         var modifiers = entry && entry.modifiers || [];
         return modifiers.reduce(function (latest, modifier) {
@@ -370,48 +371,78 @@ angular
         $scope.sortKey = null;
         $scope.reverse = false;
         $scope.orderBy = orderBy;
-        $scope.fetch(1, $scope.count);
+        $scope.fetch(1);
       };
-      $scope.refreshListCount = function () {
+      $scope.refreshListCount = function (fn) {
+        var done = function (count) {
+          $scope.wordsListItems = count;
+          if (fn) fn(count);
+        };
+        // /v1/words/meta reports totalPublishedWords etc., which countNames doesn't read for
+        // these lists; /v1/words/count takes the same state filter as the list itself.
+        if ($stateParams.status === "suggested")
+          return namesService.countNames($stateParams.status, done);
         var filters = { status: $stateParams.status };
         if ($scope.listFilters.submittedBy) filters.submittedBy = $scope.listFilters.submittedBy;
         if ($scope.listFilters.lastUpdatedBy) filters.lastUpdatedBy = $scope.listFilters.lastUpdatedBy;
-        namesService.countFilteredNames(filters, function (count) {
-          $scope.wordsListItems = count;
+        namesService.countFilteredNames(filters, done);
+      };
+      // After entries leave the list (accepted/deleted), recount and reload the current page,
+      // stepping back a page if the current one no longer exists.
+      var reloadCurrentPage = function () {
+        $scope.refreshListCount(function (total) {
+          var lastPage = Math.max(1, Math.ceil(total / $scope.pagination.itemsPerPage));
+          $scope.fetch(Math.min($scope.pagination.current, lastPage));
         });
       };
       $scope.applyListFilters = function () {
         $scope.refreshListCount();
-        $scope.fetch(1, $scope.count);
+        $scope.fetch(1);
       };
       $scope.clearFilters = function () {
         $scope.search = "";
         $scope.listFilters.submittedBy = "";
         $scope.listFilters.lastUpdatedBy = "";
-        namesService.countNames($stateParams.status, function (count) {
-          $scope.wordsListItems = count;
-        });
-        $scope.fetch(1, $scope.count);
+        $scope.refreshListCount();
+        $scope.fetch(1);
       };
-      $scope.fetch = function (newPageNumber, count) {
+      // dir-paginate calls on-page-change whenever pagination.current changes, not only on clicks,
+      // and again when the page size changes. So: set the page as the request goes out (never
+      // from a response), drop a request identical to one still in flight, and render only the
+      // latest request's response so a slow earlier page can't overwrite the one asked for last.
+      // A page-size change reaches fetch through dir-paginate's own watcher with the old page
+      // number, so a changed size always restarts at page 1.
+      var latestRequestId = 0;
+      var inFlightKey = null;
+      var lastPageSize = $scope.pagination.itemsPerPage;
+      $scope.fetch = function (newPageNumber) {
+        var page = newPageNumber || 1;
+        if ($scope.pagination.itemsPerPage !== lastPageSize) page = 1;
+        lastPageSize = $scope.pagination.itemsPerPage;
         var filters = {
           status: $stateParams.status,
-          page: newPageNumber || 1,
-          count: count || $scope.itemsPerPage || $scope.count || 50,
+          page: page,
+          count: $scope.pagination.itemsPerPage,
           orderBy: $scope.orderBy
         };
         if ($scope.listFilters.submittedBy) filters.submittedBy = $scope.listFilters.submittedBy;
         if ($scope.listFilters.lastUpdatedBy) filters.lastUpdatedBy = $scope.listFilters.lastUpdatedBy;
+        var key = angular.toJson(filters);
+        if (key === inFlightKey) return;
+        inFlightKey = key;
+        var requestId = ++latestRequestId;
+        $scope.pagination.current = page;
         return namesService
           .getNames(filters)
           .success(function (responseData) {
-            $scope.wordsList = [];
-            $scope.pagination.current = newPageNumber || 1;
-            responseData.forEach(function (name) {
-              $scope.wordsList.push(name);
-            });
+            if (requestId !== latestRequestId) return;
+            $scope.wordsList = responseData;
+          })
+          .finally(function () {
+            if (requestId === latestRequestId) inFlightKey = null;
           });
       };
+      $scope.refreshListCount();
       $scope.fetch();
       $scope.delete = function (entry) {
         if (
@@ -420,10 +451,7 @@ angular
         ) {
           return namesService.deleteName(
             entry,
-            function () {
-              $scope.wordsList.splice($scope.wordsList.indexOf(entry), 1);
-              $scope.wordsListItems--;
-            },
+            reloadCurrentPage,
             $scope.status
           );
         }
@@ -437,13 +465,7 @@ angular
           )
         )
           return;
-        return namesService.deleteNames(
-          entries,
-          function () {
-            $scope.fetch($scope.pagination.current, $scope.itemsPerPage);
-          },
-          $scope.status
-        );
+        return namesService.deleteNames(entries, reloadCurrentPage, $scope.status);
       };
       $scope.indexName = function (entry) {
         if (entry.state === "NEW")
@@ -521,22 +543,19 @@ angular
        * Adds the suggested name to the list of words eligible to be added to search index
        */
       var acceptSuggestedName = function (entry) {
-        if (!entry || !entry.id) return;
-        return namesService.acceptSuggestedName(entry, function () {
-          $scope.wordsList.splice($scope.wordsList.indexOf(entry), 1);
-        });
+        if (!entry || !entry.id) return $q.when();
+        return namesService.acceptSuggestedName(entry, angular.noop);
       };
-      // Accept Suggested Name/s
+      // Accept Suggested Name/s, then reload the page once all requests settle
       $scope.accept = function (entry) {
-        if (entry) return acceptSuggestedName(entry);
-        var entries = $.map($scope.wordsList, function (elem) {
+        var entries = entry ? [entry] : $.map($scope.wordsList, function (elem) {
           if (elem.isSelected === true) return elem;
         });
-        if (entries.length > 0) {
-          return entries.forEach(function (entry) {
-            acceptSuggestedName(entry);
-          });
-        } else toastr.warning("Please select words to accept.");
+        if (!entries.length) return toastr.warning("Please select words to accept.");
+        var settled = entries.map(function (item) {
+          return acceptSuggestedName(item).catch(angular.noop);
+        });
+        return $q.all(settled).then(reloadCurrentPage);
       };
     }
   ])
