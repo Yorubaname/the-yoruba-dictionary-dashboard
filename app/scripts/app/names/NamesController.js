@@ -352,9 +352,6 @@ angular
         }
         $scope.sortKey = keyname;
       };
-      namesService.countNames($stateParams.status, function (num) {
-        $scope.wordsListItems = num;
-      });
       var latestModifier = function (entry) {
         var modifiers = entry && entry.modifiers || [];
         return modifiers.reduce(function (latest, modifier) {
@@ -376,15 +373,14 @@ angular
         $scope.orderBy = orderBy;
         $scope.fetch(1);
       };
-      var hasListFilters = function () {
-        return !!($scope.listFilters.submittedBy || $scope.listFilters.lastUpdatedBy);
-      };
       $scope.refreshListCount = function (fn) {
         var done = function (count) {
           $scope.wordsListItems = count;
           if (fn) fn(count);
         };
-        if ($stateParams.status === "suggested" || !hasListFilters())
+        // /v1/words/meta reports totalPublishedWords etc., which countNames doesn't read for
+        // these lists; /v1/words/count takes the same state filter as the list itself.
+        if ($stateParams.status === "suggested")
           return namesService.countNames($stateParams.status, done);
         var filters = { status: $stateParams.status };
         if ($scope.listFilters.submittedBy) filters.submittedBy = $scope.listFilters.submittedBy;
@@ -432,6 +428,7 @@ angular
             });
           });
       };
+      $scope.refreshListCount();
       $scope.fetch();
       $scope.delete = function (entry) {
         if (
