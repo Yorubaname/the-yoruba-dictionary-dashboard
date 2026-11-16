@@ -330,16 +330,20 @@ angular
     "$stateParams",
     "$window",
     "toastr",
-    function ($scope, namesService, $stateParams, $window, toastr) {
+    "$q",
+    function ($scope, namesService, $stateParams, $window, toastr, $q) {
       $scope.wordsList = [];
       $scope.status = $stateParams.status;
-      $scope.count = 50;
       $scope.orderBy = "updatedAt";
       $scope.listFilters = {
         submittedBy: "",
         lastUpdatedBy: ""
       };
-      $scope.pagination = { current: 1 };
+      // Page state lives on an object so the "Show N words" select (inside an ng-if child scope)
+      // and the pager write to the same values the controller reads.
+      // Page sizes stay within the API's Words:MaxListCount (300).
+      $scope.pageSizes = [10, 20, 50, 100, 250];
+      $scope.pagination = { current: 1, itemsPerPage: 50 };
       $scope.sort = function (keyname) {
         if ($scope.sortKey === keyname) {
           $scope.reverse = !$scope.reverse;
@@ -370,34 +374,50 @@ angular
         $scope.sortKey = null;
         $scope.reverse = false;
         $scope.orderBy = orderBy;
-        $scope.fetch(1, $scope.count);
+        $scope.fetch(1);
       };
-      $scope.refreshListCount = function () {
+      var hasListFilters = function () {
+        return !!($scope.listFilters.submittedBy || $scope.listFilters.lastUpdatedBy);
+      };
+      $scope.refreshListCount = function (fn) {
+        var done = function (count) {
+          $scope.wordsListItems = count;
+          if (fn) fn(count);
+        };
+        if ($stateParams.status === "suggested" || !hasListFilters())
+          return namesService.countNames($stateParams.status, done);
         var filters = { status: $stateParams.status };
         if ($scope.listFilters.submittedBy) filters.submittedBy = $scope.listFilters.submittedBy;
         if ($scope.listFilters.lastUpdatedBy) filters.lastUpdatedBy = $scope.listFilters.lastUpdatedBy;
-        namesService.countFilteredNames(filters, function (count) {
-          $scope.wordsListItems = count;
+        namesService.countFilteredNames(filters, done);
+      };
+      // After entries leave the list (accepted/deleted), recount and reload the current page,
+      // stepping back a page if the current one no longer exists.
+      var reloadCurrentPage = function () {
+        $scope.refreshListCount(function (total) {
+          var lastPage = Math.max(1, Math.ceil(total / $scope.pagination.itemsPerPage));
+          $scope.fetch(Math.min($scope.pagination.current, lastPage));
         });
       };
       $scope.applyListFilters = function () {
         $scope.refreshListCount();
-        $scope.fetch(1, $scope.count);
+        $scope.fetch(1);
       };
       $scope.clearFilters = function () {
         $scope.search = "";
         $scope.listFilters.submittedBy = "";
         $scope.listFilters.lastUpdatedBy = "";
-        namesService.countNames($stateParams.status, function (count) {
-          $scope.wordsListItems = count;
-        });
-        $scope.fetch(1, $scope.count);
+        $scope.refreshListCount();
+        $scope.fetch(1);
       };
-      $scope.fetch = function (newPageNumber, count) {
+      $scope.changePageSize = function () {
+        $scope.fetch(1);
+      };
+      $scope.fetch = function (newPageNumber) {
         var filters = {
           status: $stateParams.status,
           page: newPageNumber || 1,
-          count: count || $scope.itemsPerPage || $scope.count || 50,
+          count: $scope.pagination.itemsPerPage,
           orderBy: $scope.orderBy
         };
         if ($scope.listFilters.submittedBy) filters.submittedBy = $scope.listFilters.submittedBy;
@@ -420,10 +440,7 @@ angular
         ) {
           return namesService.deleteName(
             entry,
-            function () {
-              $scope.wordsList.splice($scope.wordsList.indexOf(entry), 1);
-              $scope.wordsListItems--;
-            },
+            reloadCurrentPage,
             $scope.status
           );
         }
@@ -437,13 +454,7 @@ angular
           )
         )
           return;
-        return namesService.deleteNames(
-          entries,
-          function () {
-            $scope.fetch($scope.pagination.current, $scope.itemsPerPage);
-          },
-          $scope.status
-        );
+        return namesService.deleteNames(entries, reloadCurrentPage, $scope.status);
       };
       $scope.indexName = function (entry) {
         if (entry.state === "NEW")
@@ -521,22 +532,19 @@ angular
        * Adds the suggested name to the list of words eligible to be added to search index
        */
       var acceptSuggestedName = function (entry) {
-        if (!entry || !entry.id) return;
-        return namesService.acceptSuggestedName(entry, function () {
-          $scope.wordsList.splice($scope.wordsList.indexOf(entry), 1);
-        });
+        if (!entry || !entry.id) return $q.when();
+        return namesService.acceptSuggestedName(entry, angular.noop);
       };
-      // Accept Suggested Name/s
+      // Accept Suggested Name/s, then reload the page once all requests settle
       $scope.accept = function (entry) {
-        if (entry) return acceptSuggestedName(entry);
-        var entries = $.map($scope.wordsList, function (elem) {
+        var entries = entry ? [entry] : $.map($scope.wordsList, function (elem) {
           if (elem.isSelected === true) return elem;
         });
-        if (entries.length > 0) {
-          return entries.forEach(function (entry) {
-            acceptSuggestedName(entry);
-          });
-        } else toastr.warning("Please select words to accept.");
+        if (!entries.length) return toastr.warning("Please select words to accept.");
+        var settled = entries.map(function (item) {
+          return acceptSuggestedName(item).catch(angular.noop);
+        });
+        return $q.all(settled).then(reloadCurrentPage);
       };
     }
   ])

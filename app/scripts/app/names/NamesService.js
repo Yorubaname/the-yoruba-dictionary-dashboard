@@ -216,7 +216,8 @@ angular.module("NamesModule").service("NamesService", [
       filter.page = filter.page || 1;
       filter.count = filter.count || 50;
       filter.orderBy = filter.orderBy || "updatedAt";
-      if (filter.status === "suggested") return api.get("/v1/words/suggestions");
+      if (filter.status === "suggested")
+        return api.get("/v1/words/suggestions", { page: filter.page, count: filter.count });
       else if (filter.status === "published") filter.state = "PUBLISHED";
       else if (filter.status === "unpublished") filter.state = "NEW";
       else if (filter.status === "modified") filter.state = "MODIFIED";
