@@ -68,6 +68,12 @@ angular.module('CommonModule').controller('SideMenuController', [
           }
         ]
       });
+      $scope.sections.push({
+        id: 3,
+        title: 'Geolocation',
+        icon: 'fa fa-map-marker first_level_icon',
+        link: 'auth.geolocation.list_geolocation'
+      });
     }
     // accordion menu
     $(document).off('click', '.side_menu_expanded #main_menu .has_submenu > a').on('click', '.side_menu_expanded #main_menu .has_submenu > a', function () {
