@@ -19,6 +19,30 @@
                     ng-model="definition.englishTranslation"></textarea>
             </div>
         </div>
+        <div class="row definition-grammar">
+            <div class="col-sm-4">
+                <label for="definition-pos-{{$index}}" class="required">Part of speech</label>
+                <select ng-model="definition.partOfSpeech" id="definition-pos-{{$index}}" class="form-control"
+                    ng-change="on_pos_change(definition)" required>
+                    <option value="" disabled="disabled">-Select Part of speech-</option>
+                    <option value="Noun">Noun</option>
+                    <option value="Verb">Verb</option>
+                    <option value="Pronoun">Pronoun</option>
+                    <option value="Adjective">Adjective</option>
+                    <option value="Adverb">Adverb</option>
+                    <option value="Preposition">Preposition</option>
+                    <option value="Idiom">Idiom</option>
+                </select>
+            </div>
+            <div class="col-sm-4" ng-if="definition.partOfSpeech === 'Verb'">
+                <label for="definition-gf-{{$index}}">Grammatical Feature</label>
+                <select ng-model="definition.grammaticalFeature" id="definition-gf-{{$index}}" class="form-control">
+                    <option value="" ng-value="null">-Grammatical Feature-</option>
+                    <option value="Intransitive">Intransitive</option>
+                    <option value="Transitive">Transitive</option>
+                </select>
+            </div>
+        </div>
         <div class="row" ng-if="is_review_required(definition)">
             <div class="col-sm-12">
                 <label class="checkbox-inline">
