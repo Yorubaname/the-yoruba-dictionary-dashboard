@@ -22,6 +22,10 @@ jobs:
           cache: npm
 
       - name: Install dependencies
+        env:
+          # phantomjs-prebuilt's install script builds its temp path from
+          # TMPDIR/TEMP/npm_config_tmp and crashes when none is set (Linux runners).
+          TMPDIR: ${{ runner.temp }}
         run: |
           npm ci --legacy-peer-deps
           npm install --global bower
