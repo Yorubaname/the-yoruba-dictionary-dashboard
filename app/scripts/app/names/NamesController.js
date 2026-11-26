@@ -237,7 +237,9 @@ angular
           $scope.word.definitions.push({
             content: "",
             englishTranslation: "",
-            examples: []
+            examples: [],
+            partOfSpeech: "",
+            grammaticalFeature: null
           });
         }
       });

@@ -304,12 +304,23 @@ angular
               return;
             }
 
+            var previous = scope.word.definitions[scope.word.definitions.length - 1];
+
             return scope.word.definitions.push({
               content: "",
               englishTranslation: "",
               examples: [],
+              partOfSpeech: previous && previous.partOfSpeech ? previous.partOfSpeech : "",
+              grammaticalFeature: null,
               reviewed: true
             });
+          };
+
+          // Grammatical feature only applies to verbs.
+          scope.on_pos_change = function (definition) {
+            if (definition.partOfSpeech !== "Verb") {
+              definition.grammaticalFeature = null;
+            }
           };
 
           scope.remove_definition = function (index) {
@@ -323,6 +334,8 @@ angular
                 content: "",
                 englishTranslation: "",
                 examples: [],
+                partOfSpeech: "",
+                grammaticalFeature: null,
                 reviewed: true
               });
           };
